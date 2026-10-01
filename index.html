@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FlowPilot Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a "flight log" — sticky section index on the left, a 720px reading column, figures that break out wide. Amber marks anything the AI produces, in the case study as in the product. */
+:root {
+  --bg: #F1F3F7;
+  --paper: #FFFFFF;
+  --tint: #E8ECF3;
+  --ink: #121A2B;
+  --ink-2: #4A5468;
+  --muted: #747E92;
+  --line: #DBE0E9;
+  --accent: #2B50D8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E9FC;
+  --ai: #A46A00;
+  --ai-soft: #FBF0D9;
+  --ai-line: #E9C77E;
+  --good: #1D7F55; --good-soft: #DDF2E8;
+  --warn: #9A6200; --warn-soft: #FDF0D5;
+  --crit: #BB3A26; --crit-soft: #FBE3DE;
+  --wire: #9AA3B5;
+  --f-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C111C; --paper: #141B2A; --tint: #1B2436; --ink: #E8ECF4; --ink-2: #AEB7C9; --muted: #7F899D; --line: #283247;
+    --accent: #7D97FF; --accent-ink: #0C111C; --accent-soft: #1C2852;
+    --ai: #F0B547; --ai-soft: #32270F; --ai-line: #6E5320;
+    --good: #52C792; --good-soft: #13301F; --warn: #E7AA4A; --warn-soft: #33260E; --crit: #F27C66; --crit-soft: #3A1A15;
+    --wire: #56617A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C111C; --paper: #141B2A; --tint: #1B2436; --ink: #E8ECF4; --ink-2: #AEB7C9; --muted: #7F899D; --line: #283247;
+  --accent: #7D97FF; --accent-ink: #0C111C; --accent-soft: #1C2852;
+  --ai: #F0B547; --ai-soft: #32270F; --ai-line: #6E5320;
+  --good: #52C792; --good-soft: #13301F; --warn: #E7AA4A; --warn-soft: #33260E; --crit: #F27C66; --crit-soft: #3A1A15;
+  --wire: #56617A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 var(--f-body); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h1, h2, h3, h4 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -0.015em; line-height: 1.15; }
+p { margin: 0; }
+a { color: var(--accent); }
+.wrap { padding-inline: 24px; padding-block: 0; }
+.eyebrow { font: 500 12px/1.3 var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--f-mono); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* hero */
+.hero { max-width: 1180px; margin: 0 auto; padding-block: 56px 40px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; align-items: end; }
+.hero h1 { font-size: clamp(44px, 7vw, 88px); font-weight: 700; letter-spacing: -0.035em; line-height: .95; }
+.hero h1 span { color: var(--muted); font-weight: 500; display: block; font-size: .42em; letter-spacing: -0.01em; margin-top: 14px; line-height: 1.1; }
+.hero-meta { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px 24px; border-top: 1px solid var(--ink); padding-top: 16px; }
+.hero-meta div { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.hmw { max-width: 1180px; margin: 0 auto 8px; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 36px clamp(20px, 4vw, 48px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; }
+.hmw .eyebrow { color: var(--ai-line); }
+.hmw p.q { font: 600 clamp(22px, 3vw, 32px)/1.25 var(--f-display); letter-spacing: -0.015em; margin-top: 10px; text-wrap: balance; }
+.cta { display: flex; flex-direction: column; gap: 10px; }
+.btn { display: inline-flex; gap: 8px; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 9px; font-weight: 600; text-decoration: none; font-size: 15px; white-space: nowrap; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.line { border: 1px solid currentColor; color: inherit; }
+.btn:hover { filter: brightness(1.08); }
+
+/* layout */
+.doc { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; padding-block: 48px 80px; }
+.toc { position: sticky; top: calc(24px + env(safe-area-inset-top, 0px)); align-self: start; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.toc a { color: var(--ink-2); text-decoration: none; display: grid; grid-template-columns: 26px 1fr; padding: 4px 0; }
+.toc a:hover { color: var(--accent); }
+.toc a span { font: 500 11px/1.9 var(--f-mono); color: var(--muted); }
+.content { display: flex; flex-direction: column; gap: 88px; min-width: 0; }
+section.s { display: flex; flex-direction: column; gap: 22px; min-width: 0; scroll-margin-top: 24px; }
+.s-head { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.s-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; }
+.s-num { font: 500 12px var(--f-mono); color: var(--accent); letter-spacing: .08em; }
+.lead { font-size: 18px; color: var(--ink-2); max-width: 68ch; }
+.prose { max-width: 68ch; display: flex; flex-direction: column; gap: 14px; color: var(--ink-2); }
+.prose b { color: var(--ink); }
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+.note { font-size: 13px; color: var(--muted); max-width: 72ch; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 20px; font-size: 12px; font-weight: 500; background: var(--tint); color: var(--ink-2); white-space: nowrap; }
+.chip.ai { background: var(--ai-soft); color: var(--ai); }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.crit { background: var(--crit-soft); color: var(--crit); }
+
+/* problem stats */
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-top: 1px solid var(--ink); }
+.stat { padding: 18px 20px 4px 0; display: flex; flex-direction: column; gap: 6px; }
+.stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
+.stat b { font: 700 44px/1 var(--f-display); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.stat p { font-size: 14px; color: var(--ink-2); }
+.leak { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 0; }
+.leak > div { padding: 14px 16px; border-right: 1px dashed var(--line); display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.leak > div:last-child { border-right: 0; }
+.leak .pct { font: 600 22px var(--f-display); font-variant-numeric: tabular-nums; }
+.leak .bar { height: 8px; border-radius: 4px; background: var(--accent); }
+
+/* tables */
+.scroll-x { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font: 500 11px var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: bottom; }
+td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tr.us td { background: var(--accent-soft); }
+.y { color: var(--good); font-weight: 600; } .p { color: var(--warn); font-weight: 600; } .n { color: var(--muted); }
+
+/* personas */
+.personas { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.persona { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.persona header { display: flex; gap: 12px; align-items: center; }
+.pav { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 600 15px var(--f-body); flex: none; }
+.persona blockquote { margin: 0; font: italic 15px/1.5 var(--f-body); color: var(--ink); }
+.persona dl { margin: 0; display: grid; gap: 8px; font-size: 14px; }
+.persona dt { font: 500 11px var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.persona dd { margin: 0; color: var(--ink-2); }
+.persona .primary-tag { margin-left: auto; }
+
+/* journey */
+.journey { display: grid; grid-template-columns: 120px repeat(5, minmax(150px, 1fr)); min-width: 860px; font-size: 13px; }
+.journey > div { padding: 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+.journey > div:nth-child(6n) { border-right: 0; }
+.journey .rh { font: 500 11px var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.journey .ch { font-weight: 600; font-family: var(--f-display); font-size: 15px; }
+.journey .last { border-bottom: 0; }
+.emo { height: 70px; position: relative; }
+.pain { color: var(--crit); }
+.opp { color: var(--ai); font-weight: 500; }
+
+/* IA */
+.ia { padding: 24px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 18px; position: relative; }
+.ia-root { grid-column: 1 / -1; justify-self: center; padding: 8px 18px; border: 1.5px solid var(--ink); border-radius: 8px; font-weight: 600; font-family: var(--f-display); }
+.ia-group { display: flex; flex-direction: column; gap: 6px; }
+.ia-group h4 { font-size: 13px; font-family: var(--f-mono); font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.ia-node { padding: 7px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); font-weight: 500; font-size: 14px; }
+.ia-node.key { border-color: var(--ai-line); background: var(--ai-soft); }
+.ia-node ul { margin: 4px 0 0; padding-left: 16px; font-weight: 400; color: var(--ink-2); font-size: 13px; }
+
+/* flow */
+.flow { padding: 28px 24px; overflow-x: auto; }
+.flow-row { display: flex; align-items: stretch; gap: 0; min-width: 980px; }
+.fnode { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--paper); font-size: 13px; color: var(--ink-2); }
+.fnode b { font-family: var(--f-display); font-size: 15px; color: var(--ink); }
+.fnode.ai { border-color: var(--ai-line); background: var(--ai-soft); }
+.fnode.human { border-color: var(--accent); }
+.fnode.end { border-color: var(--good); }
+.fnode .who { font: 500 10px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; }
+.fnode.ai .who { color: var(--ai); } .fnode.human .who { color: var(--accent); } .fnode.end .who { color: var(--good); } .fnode .who { color: var(--muted); }
+.farrow { width: 28px; flex: none; display: grid; place-items: center; color: var(--muted); }
+.branches { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-top: 18px; min-width: 980px; }
+.branch { border: 1.5px dashed var(--line); border-radius: 10px; padding: 12px 14px; font-size: 13px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; }
+.branch b { color: var(--ink); }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid; }
+
+/* wireframes */
+.wires { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
+.wf { display: flex; flex-direction: column; gap: 10px; }
+.wf-frame { aspect-ratio: 4 / 3; max-width: 100%; border: 1.5px solid var(--wire); border-radius: 10px; background: var(--paper); padding: 10px; display: grid; gap: 8px; font: 500 10px var(--f-mono); color: var(--wire); text-transform: uppercase; letter-spacing: .06em; }
+.wf-frame * { min-width: 0; }
+.bx { border: 1.5px dashed var(--wire); border-radius: 5px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+.ln { height: 6px; border-radius: 3px; background: var(--line); }
+.ln.s { width: 55%; } .ln.m { width: 75%; } .ln.dark { background: var(--wire); }
+.solid { background: var(--wire); border-radius: 4px; color: var(--paper); display: grid; place-items: center; padding: 3px; }
+.wf figcaption, .wf .cap { font-size: 14px; color: var(--ink-2); }
+.wf .verdict { display: flex; gap: 8px; align-items: center; }
+.wf-a { grid-template-columns: 1fr; grid-template-rows: 18px 1fr; position: relative; }
+.modal-wf { position: absolute; inset: 22% 18% 12% 18%; background: var(--paper); border: 1.5px solid var(--wire); border-radius: 7px; padding: 8px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 0 0 999px color-mix(in srgb, var(--wire) 25%, transparent); }
+.wf-b { grid-template-columns: 2fr 3fr; grid-template-rows: 18px 1fr 22px; }
+.wf-b .top { grid-column: 1 / -1; }
+.wf-b .foot { grid-column: 2; }
+
+/* decisions */
+.decisions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.dec { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.dec h3 { font-size: 19px; }
+.dec .why { font-size: 14px; color: var(--ink-2); }
+.dec .kv { display: grid; grid-template-columns: 74px minmax(0,1fr); gap: 6px 10px; font-size: 13px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: auto; }
+.dec .kv dt { font: 500 11px/1.7 var(--f-mono); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.dec .kv dd { margin: 0; color: var(--ink-2); }
+.tag { font: 500 11px var(--f-mono); color: var(--accent); letter-spacing: .06em; }
+
+/* design system */
+.ds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ds .panel { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.sw { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.sw div { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.sw i { height: 52px; border-radius: 8px; border: 1px solid var(--line); }
+.sw small { color: var(--muted); font-family: var(--f-mono); font-size: 11px; }
+.type-row { display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 12px; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.type-row:last-child { border-bottom: 0; }
+.type-row small { font: 500 11px var(--f-mono); color: var(--muted); }
+.comp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ui-btn { padding: 8px 14px; border-radius: 7px; font: 500 14px var(--f-body); border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.ui-btn.p { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ui-btn.a { background: var(--ai-soft); border-color: var(--ai-line); color: var(--ai); }
+.ui-btn.dis { opacity: .45; }
+.ai-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--paper); }
+.ai-card .quote { padding: 6px 10px; border-left: 2px solid var(--ai-line); background: var(--ai-soft); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--ink-2); }
+.ai-card .quote span { font-family: var(--f-mono); color: var(--ai); margin-right: 6px; font-size: 12px; }
+.ai-mark { display: inline-flex; align-items: center; gap: 6px; font: 500 11px var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ai); }
+.ai-mark svg { width: 14px; height: 14px; }
+.principles { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.principles div { border-top: 2px solid var(--ink); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+.principles b { font-family: var(--f-display); font-size: 17px; color: var(--ink); }
+
+/* prototype */
+.proto { overflow: hidden; }
+.proto-bar { display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--tint); flex-wrap: wrap; }
+.proto-bar .dots { display: flex; gap: 6px; }
+.proto-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.proto-bar .url { flex: 1; min-width: 0; font: 12px var(--f-mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proto iframe { display: block; width: 100%; height: 760px; border: 0; background: var(--bg); }
+.tour { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; counter-reset: t; }
+.tour li { list-style: none; border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--paper); font-size: 14px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; }
+.tour li b { color: var(--ink); }
+.tour ol { margin: 0; padding: 0; }
+.screens { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
+.screens a { text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 9px; padding: 12px; background: var(--paper); font-size: 14px; font-weight: 500; display: flex; flex-direction: column; gap: 2px; }
+.screens a small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.screens a:hover { border-color: var(--accent); }
+
+/* metrics */
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.metric { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.metric .from-to { display: flex; align-items: baseline; gap: 10px; font: 700 34px/1 var(--f-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.metric .from-to s { color: var(--muted); font-weight: 500; font-size: 22px; }
+.metric p { font-size: 14px; color: var(--ink-2); }
+.next { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--ink-2); max-width: 68ch; }
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; max-width: 1180px; margin: 0 auto; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: minmax(0,1fr); gap: 28px; }
+  .hmw { grid-template-columns: minmax(0,1fr); }
+  .doc { grid-template-columns: minmax(0,1fr); }
+  .toc { display: none; }
+  .personas, .principles, .metrics { grid-template-columns: minmax(0,1fr); }
+  .decisions, .ds, .wires { grid-template-columns: minmax(0,1fr); }
+  .tour { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .screens { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .ia { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 640px) {
+  .wrap { padding-inline: 16px; }
+  .stats { grid-template-columns: minmax(0,1fr); }
+  .stat + .stat { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  .leak { grid-template-columns: minmax(0,1fr); }
+  .leak > div { border-right: 0; border-bottom: 1px dashed var(--line); }
+  .sw { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .tour { grid-template-columns: minmax(0,1fr); }
+  .ia { grid-template-columns: minmax(0,1fr); }
+  .proto iframe { height: 640px; }
+  .hero-meta { grid-template-columns: minmax(0,1fr); }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow" style="margin-bottom:18px">UX case study · AI SaaS concept</div>
+    <h1>FlowPilot<span>An AI workspace that turns meetings, messages and documents into owned, dated work.</span></h1>
+  </div>
+  <div class="hero-meta">
+    <div><span class="eyebrow">Role</span>Product designer (solo): research, UX, UI, prototype</div>
+    <div><span class="eyebrow">Timeline</span>6 weeks, self-initiated</div>
+    <div><span class="eyebrow">Platform</span>Responsive web app, desktop first</div>
+    <div><span class="eyebrow">Deliverables</span>Research, IA, flows, wireframes, design system, coded prototype</div>
+  </div>
+</header>
+
+<div class="hmw">
+  <div>
+    <div class="eyebrow">Core UX challenge</div>
+    <p class="q">How might we reduce the time project teams spend manually turning conversations and meetings into actionable work?</p>
+  </div>
+  <div class="cta">
+    <a class="btn primary" href="prototype.html#meeting" target="_blank" rel="noopener">Try the meeting flow</a>
+    <a class="btn line" href="prototype.html" target="_blank" rel="noopener">Start from onboarding</a>
+  </div>
+</div>
+
+<div class="doc">
+  <nav class="toc" aria-label="Case study sections">
+    <a href="#problem"><span>01</span>Problem</a>
+    <a href="#competitors"><span>02</span>Competitors</a>
+    <a href="#personas"><span>03</span>Personas</a>
+    <a href="#journey"><span>04</span>Current journey</a>
+    <a href="#ia"><span>05</span>Information architecture</a>
+    <a href="#flow"><span>06</span>Key user flow</a>
+    <a href="#wireframes"><span>07</span>Wireframes</a>
+    <a href="#decisions"><span>08</span>Usability decisions</a>
+    <a href="#system"><span>09</span>Design system</a>
+    <a href="#prototype"><span>10</span>Prototype</a>
+    <a href="#outcomes"><span>11</span>Measuring success</a>
+  </nav>
+
+  <main class="content">
+
+    <!-- 01 -->
+    <section class="s" id="problem">
+      <div class="s-head"><span class="s-num">01 · PROBLEM</span><h2>Meetings end. The work they created leaks away.</h2></div>
+      <p class="lead">Small teams make most of their decisions out loud: in planning calls, standups and Slack threads. Turning those decisions into tasks is a manual, unowned chore that usually falls to the project lead after the meeting, when the details are already fading.</p>
+      <div class="stats">
+        <div class="stat"><b>~25 min</b><p>spent by a lead after each planning meeting rewriting notes into tasks and pinging owners</p></div>
+        <div class="stat"><b>1 in 3</b><p>action items said out loud never become a tracked task with an owner and a date</p></div>
+        <div class="stat"><b>4 tools</b><p>touched to get one decision from a call into a project board: call, doc, chat, tracker</p></div>
+      </div>
+      <p class="note"><span class="chip warn">Assumption</span> These figures are working hypotheses, not measured data. They frame the problem and set the targets in section 11. Before committing roadmap, validate them with 5–8 interviews with project leads at 8–40 person teams and a one-week diary study of post-meeting work.</p>
+      <div class="panel" style="padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div class="eyebrow">Where action items get lost · share of items surviving each step (hypothesis)</div>
+        <div class="leak">
+          <div><span class="pct">100%</span><div class="bar" style="width:100%"></div>Said in the meeting</div>
+          <div><span class="pct">82%</span><div class="bar" style="width:82%"></div>Written in someone’s notes</div>
+          <div><span class="pct">70%</span><div class="bar" style="width:70%"></div>Shared after the call</div>
+          <div><span class="pct">64%</span><div class="bar" style="width:64%"></div>Entered as a task</div>
+          <div><span class="pct">52%</span><div class="bar" style="width:52%"></div>Has an owner and a due date</div>
+        </div>
+      </div>
+      <div class="prose">
+        <p><b>Problem statement.</b> Project leads at small teams need a fast, trustworthy way to turn what was agreed in a conversation into assigned, dated tasks, because today that step is manual, delayed, and the first thing skipped when the week gets busy.</p>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="s" id="competitors">
+      <div class="s-head"><span class="s-num">02 · COMPETITOR RESEARCH</span><h2>Note-takers stop at the summary. Trackers start at the task.</h2></div>
+      <p class="lead">I compared two groups: AI meeting assistants, which capture conversations well, and project tools, which manage work well. Very few connect the two with a human review step in between.</p>
+      <div class="panel scroll-x">
+        <table>
+          <thead><tr><th>Product</th><th>Category</th><th>Meeting summary</th><th>Detects action items</th><th>Review before tasks exist</th><th>Owner + date suggested</th><th>Updates project board</th></tr></thead>
+          <tbody>
+            <tr><td><b>Otter.ai</b></td><td>Meeting assistant</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">—</td><td class="p">Partial</td><td class="n">Via integrations</td></tr>
+            <tr><td><b>Fireflies.ai</b></td><td>Meeting assistant</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">—</td><td class="p">Partial</td><td class="p">Via integrations</td></tr>
+            <tr><td><b>Notion AI</b></td><td>Docs + AI</td><td class="y">Yes</td><td class="y">Yes</td><td class="p">Manual copy</td><td class="n">—</td><td class="p">Manual</td></tr>
+            <tr><td><b>Asana</b></td><td>Work management</td><td class="p">Partial</td><td class="p">Partial</td><td class="p">Partial</td><td class="p">Partial</td><td class="y">Yes</td></tr>
+            <tr><td><b>ClickUp</b></td><td>Work management</td><td class="p">Partial</td><td class="p">Partial</td><td class="n">—</td><td class="p">Partial</td><td class="y">Yes</td></tr>
+            <tr><td><b>Linear</b></td><td>Issue tracking</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="y">Yes</td></tr>
+            <tr class="us"><td><b>FlowPilot</b></td><td>Concept</td><td class="y">Yes, with timestamps</td><td class="y">Yes, with confidence</td><td class="y">Always</td><td class="y">Yes, with source quote</td><td class="y">Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Ratings reflect public product pages and hands-on trials as of Q3 2026 and are simplified to the capabilities this project cares about. These products change quickly; re-check before quoting.</p>
+      <div class="prose">
+        <p><b>The gap.</b> Meeting tools produce a list of action items, then hand you a document. Project tools hold the tasks, but someone still has to type them in. The step in between, where a person checks who owns what and by when, is where trust is earned or lost, and nobody designs for it.</p>
+        <p><b>Patterns worth borrowing.</b> Timestamped transcript links (meeting assistants), inline editable rows (Linear), and the “inbox to triage” model (email clients, GitHub notifications).</p>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="s" id="personas">
+      <div class="s-head"><span class="s-num">03 · USERS &amp; PERSONAS</span><h2>Three people, one meeting, different needs.</h2></div>
+      <p class="lead">Assumption-based proto-personas, to be replaced with interview findings. The lead is the primary persona: they run the meeting, and today they do the cleanup.</p>
+      <div class="personas">
+        <article class="panel persona">
+          <header><span class="pav" style="background:#2B50D8">MC</span><div><b>Maya, 31</b><div class="eyebrow">Product lead</div></div><span class="chip ai primary-tag">Primary</span></header>
+          <blockquote>“I leave planning with a page of notes and spend my lunch turning it into tickets.”</blockquote>
+          <dl><dt>Goals</dt><dd>Every decision has an owner and a date before people forget it.</dd><dt>Frustrations</dt><dd>Chasing people for updates; tasks that say “follow up on the thing”.</dd><dt>Needs from AI</dt><dd>Speed, but with the final say. She won’t send work to people unchecked.</dd></dl>
+        </article>
+        <article class="panel persona">
+          <header><span class="pav" style="background:#1D7F55">PR</span><div><b>Priya, 27</b><div class="eyebrow">Mobile engineer</div></div></header>
+          <blockquote>“If it’s not in my list, it doesn’t exist. Just tell me what I own.”</blockquote>
+          <dl><dt>Goals</dt><dd>A short, accurate list of her work with the context attached.</dd><dt>Frustrations</dt><dd>Tasks with no background; being assigned things she never agreed to.</dd><dt>Needs from AI</dt><dd>A link back to the exact moment the task was discussed.</dd></dl>
+        </article>
+        <article class="panel persona">
+          <header><span class="pav" style="background:#2E7C93">SO</span><div><b>Sam, 42</b><div class="eyebrow">Founder &amp; CEO</div></div></header>
+          <blockquote>“I don’t need every task. I need to know what’s at risk this week.”</blockquote>
+          <dl><dt>Goals</dt><dd>Project health at a glance; the risks raised in meetings he skipped.</dd><dt>Frustrations</dt><dd>Status meetings that exist only to share status.</dd><dt>Needs from AI</dt><dd>Answers to plain questions: “what’s blocking the launch?”</dd></dl>
+        </article>
+      </div>
+      <div class="panel scroll-x">
+        <table>
+          <thead><tr><th>Assumption</th><th>Risk if wrong</th><th>How I’d test it</th></tr></thead>
+          <tbody>
+            <tr><td>Leads will review AI items if it takes under 2 minutes</td><td>High: the review step is the product</td><td>Timed task in moderated usability test</td></tr>
+            <tr><td>People resent tasks assigned without their agreement</td><td>Medium: shapes the confidence model</td><td>Interview probe + reaction to an auto-assigned task</td></tr>
+            <tr><td>Source quotes increase trust in AI-created tasks</td><td>Medium</td><td>A/B: review card with and without quote, measure edits + confidence rating</td></tr>
+            <tr><td>Teams already record calls in Meet or Zoom</td><td>High: no recording, no input</td><td>Screener question; fallback is pasting notes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="s" id="journey">
+      <div class="s-head"><span class="s-num">04 · CURRENT JOURNEY</span><h2>Maya’s Tuesday, after sprint planning.</h2></div>
+      <div class="panel scroll-x">
+        <div class="journey">
+          <div class="rh">Stage</div><div class="ch">Meeting</div><div class="ch">Write up</div><div class="ch">Share</div><div class="ch">Create tasks</div><div class="ch">Follow up</div>
+          <div class="rh">Doing</div><div>Runs the call, takes notes while facilitating</div><div>Cleans up notes, tries to remember who said what</div><div>Posts summary in Slack, tags people</div><div>Re-types items into the tracker, guesses dates</div><div>Pings owners who “didn’t see it”</div>
+          <div class="rh">Time</div><div class="mono">42 min</div><div class="mono">10 min</div><div class="mono">4 min</div><div class="mono">8 min</div><div class="mono">days</div>
+          <div class="rh">Feeling</div>
+          <div class="emo" style="grid-column: span 5; padding:0">
+            <svg viewBox="0 0 500 70" preserveAspectRatio="none" style="width:100%;height:70px;display:block" aria-label="Mood falls from neutral during the meeting to its lowest during task creation and follow up">
+              <line x1="0" y1="35" x2="500" y2="35" stroke="var(--line)" stroke-dasharray="4 4"/>
+              <polyline fill="none" stroke="var(--crit)" stroke-width="2.5" points="50,20 150,40 250,34 350,56 450,60"/>
+              <g fill="var(--crit)"><circle cx="50" cy="20" r="4"/><circle cx="150" cy="40" r="4"/><circle cx="250" cy="34" r="4"/><circle cx="350" cy="56" r="4"/><circle cx="450" cy="60" r="4"/></g>
+            </svg>
+          </div>
+          <div class="rh">Pain</div><div class="pain">Can’t facilitate and capture at once</div><div class="pain">Owners and dates are fuzzy</div><div class="pain">Summary gets buried in the channel</div><div class="pain">Duplicate work, typos, wrong owners</div><div class="pain">Nobody owns the follow up</div>
+          <div class="rh last">Opportunity</div><div class="opp last">Capture automatically</div><div class="opp last">Draft owners and dates from what was said</div><div class="opp last">Post after review, linked to tasks</div><div class="opp last">One-click create from reviewed items</div><div class="opp last">Notify owners with the source quote</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="s" id="ia">
+      <div class="s-head"><span class="s-num">05 · INFORMATION ARCHITECTURE</span><h2>Organized around work, with AI as a layer, not a place.</h2></div>
+      <p class="lead">A planned open card sort (10–12 participants) would test the main grouping. My starting structure keeps daily work at the top level and puts AI inside every surface, with one dedicated place to ask questions.</p>
+      <div class="panel ia">
+        <div class="ia-root">FlowPilot workspace</div>
+        <div class="ia-group"><h4>Daily work</h4>
+          <div class="ia-node">Home<ul><li>Needs attention</li><li>My priorities</li><li>Deadlines · activity</li></ul></div>
+          <div class="ia-node">My tasks<ul><li>Mine · All · Overdue · From meetings</li></ul></div>
+          <div class="ia-node">Notifications<ul><li>Important · Everything else</li></ul></div>
+        </div>
+        <div class="ia-group"><h4>Projects</h4>
+          <div class="ia-node">Project list<ul><li>List / board toggle</li></ul></div>
+          <div class="ia-node">Project detail<ul><li>Board · progress · team</li></ul></div>
+          <div class="ia-node">Task detail<ul><li>Fields · source quote · notes</li></ul></div>
+        </div>
+        <div class="ia-group"><h4>Knowledge &amp; AI</h4>
+          <div class="ia-node key">Meetings<ul><li>Summary</li><li>Review action items</li><li>Tasks created</li></ul></div>
+          <div class="ia-node key">Ask FlowPilot<ul><li>Questions · draft tasks</li></ul></div>
+          <div class="ia-node">Documents<ul><li>Search · cited answers</li></ul></div>
+        </div>
+        <div class="ia-group"><h4>Workspace</h4>
+          <div class="ia-node">Analytics<ul><li>Throughput · workload · health</li></ul></div>
+          <div class="ia-node">Settings<ul><li>Members · roles &amp; permissions</li><li>AI &amp; privacy · workspace</li></ul></div>
+          <div class="ia-node">Onboarding<ul><li>Workspace · role · connect · invite</li></ul></div>
+        </div>
+      </div>
+      <p class="note">Amber nodes are where AI produces content a person must review. The global search bar doubles as the entry to Ask FlowPilot, so the assistant is reachable from every screen.</p>
+    </section>
+
+    <!-- 06 -->
+    <section class="s" id="flow">
+      <div class="s-head"><span class="s-num">06 · KEY USER FLOW</span><h2>From “meeting ended” to an updated board in under 3 minutes.</h2></div>
+      <div class="legend"><span><i style="border-color:var(--ai-line);background:var(--ai-soft)"></i>FlowPilot does it</span><span><i style="border-color:var(--accent)"></i>Person decides</span><span><i style="border-color:var(--good)"></i>Outcome</span></div>
+      <div class="panel flow">
+        <div class="flow-row">
+          <div class="fnode"><span class="who">Trigger</span><b>Meeting ends</b>Recording from Meet or Zoom arrives.</div>
+          <div class="farrow">→</div>
+          <div class="fnode ai"><span class="who">AI</span><b>Summary</b>Overview, decisions, risks, open questions, each with a timestamp.</div>
+          <div class="farrow">→</div>
+          <div class="fnode ai"><span class="who">AI</span><b>Detect items</b>Title, owner, date, project, priority, plus confidence and source quote.</div>
+          <div class="farrow">→</div>
+          <div class="fnode human"><span class="who">Person</span><b>Review</b>Check, edit inline, or uncheck. Missing owner or date blocks creation.</div>
+          <div class="farrow">→</div>
+          <div class="fnode human"><span class="who">Person</span><b>Create tasks</b>One button. Undo is available for 6 seconds and on the result screen.</div>
+          <div class="farrow">→</div>
+          <div class="fnode end"><span class="who">Outcome</span><b>Board updates</b>Owners notified with context. Dashboard and analytics refresh.</div>
+        </div>
+        <div class="branches">
+          <div class="branch"><b>Clear commitment</b>Owner named and date stated. Pre-checked, fields shown normally.</div>
+          <div class="branch"><b>Check owner</b>Owner inferred, not named. Pre-checked, field highlighted with “Suggested · not named”.</div>
+          <div class="branch"><b>Sounds like an idea</b>No owner or date. Unchecked by default, so ideas never become tasks by accident.</div>
+        </div>
+      </div>
+      <div class="prose">
+        <p><b>Entry points.</b> A “Ready for review” card on Home, an important notification, the Meetings list, or a Slack message. All open the same review screen.</p>
+        <p><b>Exit points.</b> “Save for later” keeps every edit. After creation, the person can open each affected project board or go back Home, where the new tasks are highlighted.</p>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="s" id="wireframes">
+      <div class="s-head"><span class="s-num">07 · LOW-FI WIREFRAMES</span><h2>The review screen took two tries.</h2></div>
+      <div class="wires">
+        <figure class="wf" style="margin:0">
+          <div class="wf-frame wf-a">
+            <div class="bx" style="flex-direction:row;align-items:center">Meeting · Sprint 14</div>
+            <div class="bx"><div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
+            <div class="modal-wf">Action items (6)
+              <div class="ln m dark"></div><div class="ln m dark"></div><div class="ln m dark"></div><div class="ln m dark"></div>
+              <div style="display:flex;gap:6px;margin-top:auto;justify-content:flex-end"><span class="solid" style="width:30%">Create all</span></div>
+            </div>
+          </div>
+          <figcaption class="cap"><div class="verdict"><span class="chip crit">Rejected</span><b>V1 · Modal checklist over the summary</b></div>The modal hid the summary, so people couldn’t check an item against what was said. “Create all” invited rubber-stamping, and editing an owner meant a second dialog.</figcaption>
+        </figure>
+        <figure class="wf" style="margin:0">
+          <div class="wf-frame wf-b">
+            <div class="bx top" style="flex-direction:row;align-items:center;justify-content:space-between">Sprint 14 <span>1 Summary — 2 Review — 3 Done</span></div>
+            <div class="bx">Summary<div class="ln"></div><div class="ln m"></div><div class="ln s"></div>Decisions<div class="ln m"></div><div class="ln s"></div>Risks<div class="ln m"></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="bx">☑ Item · quote<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px"><span class="solid">Owner</span><span class="solid">Due</span><span class="solid">Proj</span><span class="solid">Prio</span></div></div>
+              <div class="bx">☑ Item · quote<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px"><span class="solid">Owner</span><span class="solid">Due</span><span class="solid">Proj</span><span class="solid">Prio</span></div></div>
+              <div class="bx" style="border-style:dotted">☐ Idea · unchecked</div>
+            </div>
+            <div class="bx foot" style="flex-direction:row;justify-content:space-between;align-items:center">5 of 6 · 1 needs owner <span class="solid" style="width:34%">Create 5 tasks</span></div>
+          </div>
+          <figcaption class="cap"><div class="verdict"><span class="chip good">Chosen</span><b>V2 · Split view with inline fields</b></div>Summary and items side by side. Every field is editable in place. The sticky footer counts what will happen and explains why the button is disabled.</figcaption>
+        </figure>
+        <figure class="wf" style="margin:0">
+          <div class="wf-frame" style="grid-template-columns:1fr 3fr;grid-template-rows:auto">
+            <div class="bx">Nav<div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="bx" style="border-color:var(--ai-line)">Needs attention · meeting ready <span class="solid" style="width:36%;align-self:flex-end">Review</span></div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px"><span class="bx">KPI</span><span class="bx">KPI</span><span class="bx">KPI</span><span class="bx">KPI</span></div>
+              <div style="display:grid;grid-template-columns:3fr 2fr;gap:6px;flex:1"><div class="bx">My priorities<div class="ln"></div><div class="ln"></div><div class="ln m"></div></div><div class="bx">Projects<div class="ln s"></div><div class="ln s"></div></div></div>
+            </div>
+          </div>
+          <figcaption class="cap"><b>Home</b> · One “needs attention” slot at the top. It shows the single most time-sensitive thing, which after a meeting is the review.</figcaption>
+        </figure>
+        <figure class="wf" style="margin:0">
+          <div class="wf-frame" style="grid-template-rows:1fr auto">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="bx" style="align-self:flex-end;width:60%">Create a task to update the FAQ for Tom by Friday</div>
+              <div class="bx" style="width:70%;border-color:var(--ai-line)">Draft task · Tom · Fri<div style="display:flex;gap:4px"><span class="solid" style="width:40%">Create</span><span class="solid" style="width:30%">Edit</span></div></div>
+            </div>
+            <div class="bx" style="flex-direction:row;justify-content:space-between">Ask anything… <span class="solid" style="width:12%">→</span></div>
+          </div>
+          <figcaption class="cap"><b>Ask FlowPilot</b> · The assistant never changes data from a sentence. It answers, or shows a draft card the person confirms.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="s" id="decisions">
+      <div class="s-head"><span class="s-num">08 · USABILITY DECISIONS</span><h2>Designing for trust in AI output.</h2></div>
+      <p class="lead">The AI will sometimes be wrong. These decisions make mistakes cheap to spot and cheap to fix, which matters more than raising accuracy by a few points.</p>
+      <div class="decisions">
+        <article class="panel dec"><span class="tag">D1 · HUMAN IN THE LOOP</span><h3>Nothing becomes a task until a person confirms it.</h3><p class="why">Being assigned work you never agreed to is the fastest way to lose a team’s trust. Review is required and can’t be turned off in settings.</p><dl class="kv"><dt>Trade-off</dt><dd>One extra step versus full automation.</dd><dt>Heuristic</dt><dd>User control and freedom</dd></dl></article>
+        <article class="panel dec"><span class="tag">D2 · SHOW THE SOURCE</span><h3>Every item carries the quote and timestamp it came from.</h3><p class="why">Reviewers judge “did we really agree to that?” in seconds. Owners get the same context in their notification.</p><dl class="kv"><dt>Trade-off</dt><dd>Taller cards. Quotes are capped at 2 lines.</dd><dt>Heuristic</dt><dd>Recognition rather than recall</dd></dl></article>
+        <article class="panel dec"><span class="tag">D3 · CONFIDENCE IN WORDS</span><h3>“Clear commitment”, “Check owner”, “Sounds like an idea”.</h3><p class="why">A percentage invites debate about the number. A plain label tells the reviewer what to do next and where to look.</p><dl class="kv"><dt>Trade-off</dt><dd>Less precision, much faster scanning.</dd><dt>Heuristic</dt><dd>Match between system and real world</dd></dl></article>
+        <article class="panel dec"><span class="tag">D4 · SAFE DEFAULTS</span><h3>Ideas start unchecked. Inferred fields are highlighted.</h3><p class="why">The default state is the most likely correct one. Only low-confidence items need an action to include, so a hurried reviewer can’t create junk tasks.</p><dl class="kv"><dt>Trade-off</dt><dd>A real task might be missed. The summary still lists it.</dd><dt>Heuristic</dt><dd>Error prevention</dd></dl></article>
+        <article class="panel dec"><span class="tag">D5 · EXPLAIN THE DISABLED BUTTON</span><h3>The footer says exactly what is blocking creation.</h3><p class="why">“1 item needs an owner or date” sits next to the disabled button, and the card is outlined. No guessing why nothing happens.</p><dl class="kv"><dt>Trade-off</dt><dd>More copy in the footer; kept to one line.</dd><dt>Heuristic</dt><dd>Visibility of system status</dd></dl></article>
+        <article class="panel dec"><span class="tag">D6 · UNDO, NOT “ARE YOU SURE?”</span><h3>Create immediately, then offer Undo.</h3><p class="why">A confirm dialog after a review step is redundant. Undo keeps the flow fast and still recovers from mistakes, with edits preserved.</p><dl class="kv"><dt>Trade-off</dt><dd>Owners may see a notification that’s then withdrawn; notifications send after the undo window.</dd><dt>Heuristic</dt><dd>Help users recover from errors</dd></dl></article>
+        <article class="panel dec"><span class="tag">D7 · ONE COLOR FOR AI</span><h3>Amber marks anything FlowPilot wrote.</h3><p class="why">Summaries, drafts, new-task badges and suggestions all share one color and a spark icon, so people always know what to double-check.</p><dl class="kv"><dt>Trade-off</dt><dd>Amber is reserved, so warnings use a separate orange-brown with an icon.</dd><dt>Heuristic</dt><dd>Consistency and standards</dd></dl></article>
+        <article class="panel dec"><span class="tag">D8 · ROLE CHANGES ORDER, NOT ACCESS</span><h3>Onboarding role picks what Home shows first.</h3><p class="why">An engineer sees their tasks first; a founder sees project health first. Permissions stay separate, under Settings, so picking a role never locks anyone out.</p><dl class="kv"><dt>Trade-off</dt><dd>One more onboarding step. Preview shows the payoff immediately.</dd><dt>Heuristic</dt><dd>Flexibility and efficiency of use</dd></dl></article>
+      </div>
+      <div class="panel scroll-x">
+        <table>
+          <thead><tr><th>Usability test plan · task</th><th>Success criteria</th><th>What it checks</th></tr></thead>
+          <tbody>
+            <tr><td>Review a meeting and create the right tasks</td><td>Under 3 min, no wrong owner created</td><td>D1, D2, D4 · the core flow</td></tr>
+            <tr><td>Find why “Create” is disabled and fix it</td><td>Under 30 s without help</td><td>D5 · disabled-state copy</td></tr>
+            <tr><td>Check where a task came from</td><td>Finds quote from task detail</td><td>D2 · source quote placement in task detail</td></tr>
+            <tr><td>Undo a batch of tasks</td><td>Finds Undo in toast or result screen</td><td>D6 · undo discoverability</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Run as 5–6 moderated sessions with project leads using the coded prototype below. Record time on task, errors (wrong owner or date created) and a 1–5 confidence rating after each task.</p>
+    </section>
+
+    <!-- 09 -->
+    <section class="s" id="system">
+      <div class="s-head"><span class="s-num">09 · DESIGN SYSTEM</span><h2>Calm by default, amber where the AI speaks.</h2></div>
+      <div class="principles">
+        <div><b>Quiet chrome</b>Cool neutrals and one cobalt accent for actions. Content is the loudest thing on screen.</div>
+        <div><b>AI is always labelled</b>Amber fill, spark icon and a mono label: “Drafted by FlowPilot”.</div>
+        <div><b>State in shape, not just color</b>Priority uses bar height; status uses chips with words; warnings carry icons.</div>
+      </div>
+      <div class="ds">
+        <div class="panel">
+          <div class="eyebrow">Color tokens · light / dark</div>
+          <div class="sw">
+            <div><i style="background:var(--ink)"></i>Ink<small>--ink</small></div>
+            <div><i style="background:var(--bg)"></i>Background<small>--bg</small></div>
+            <div><i style="background:var(--accent)"></i>Action<small>--accent</small></div>
+            <div><i style="background:var(--ai-soft);border-color:var(--ai-line)"></i>AI surface<small>--ai-soft</small></div>
+            <div><i style="background:var(--ai)"></i>AI ink<small>--ai</small></div>
+            <div><i style="background:var(--good)"></i>Done / on track<small>--good</small></div>
+            <div><i style="background:var(--warn)"></i>Check<small>--warn</small></div>
+            <div><i style="background:var(--crit)"></i>Overdue / risk<small>--crit</small></div>
+          </div>
+          <p class="note">Every token has a dark-mode value tuned for contrast on its own surface. Switch your OS theme to see this page and the prototype change.</p>
+        </div>
+        <div class="panel">
+          <div class="eyebrow">Type</div>
+          <div class="type-row"><small>Display</small><span style="font:700 30px/1.1 var(--f-display);letter-spacing:-.02em">Familjen Grotesk</span></div>
+          <div class="type-row"><small>Body</small><span>IBM Plex Sans for UI text, 14px in-app, 16px for reading.</span></div>
+          <div class="type-row"><small>Data</small><span class="mono" style="font-size:13px">IBM PLEX MONO · 03:58 · LABELS</span></div>
+          <div class="type-row"><small>Scale</small><span class="mono num" style="font-size:13px">11 · 12 · 14 · 15 · 17 · 26 · 30</span></div>
+        </div>
+        <div class="panel">
+          <div class="eyebrow">Buttons &amp; chips</div>
+          <div class="comp-row"><span class="ui-btn p">Create 5 tasks</span><span class="ui-btn">Save for later</span><span class="ui-btn a">Ask FlowPilot</span><span class="ui-btn p dis">Create 6 tasks</span></div>
+          <div class="comp-row"><span class="chip good">Clear commitment</span><span class="chip warn">Check owner</span><span class="chip">Sounds like an idea</span><span class="chip crit">At risk</span><span class="chip ai">Drafted</span></div>
+        </div>
+        <div class="panel">
+          <div class="eyebrow">Signature component · AI action item</div>
+          <div class="ai-card">
+            <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>☑ Fix Android 14 crash on image upload</b><span class="chip good">Clear commitment</span></div>
+            <div class="quote"><span>03:58</span>Priya, can you take the Android crash? It has to be in Friday’s build or the beta slips.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)"><span class="chip">Priya Raman</span><span class="chip">Fri, Oct 2</span><span class="chip">Mobile App 2.0</span><span class="chip">Urgent</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="s" id="prototype">
+      <div class="s-head"><span class="s-num">10 · POLISHED UI &amp; PROTOTYPE</span><h2>Try it. Every screen works.</h2></div>
+      <p class="lead">A coded, interactive prototype with sample data. It covers all ten areas, and the meeting flow updates the dashboard, project boards, notifications and analytics as you go.</p>
+      <ol class="tour">
+        <li><b>1 · Open the meeting</b>From Home, select “Review action items” on the amber card.</li>
+        <li><b>2 · Fix the gaps</b>Check “Evaluate switching analytics vendor”. Create is blocked until you pick an owner and date.</li>
+        <li><b>3 · Create tasks</b>One button. Try Undo in the toast, then create again.</li>
+        <li><b>4 · See it land</b>Open the Mobile App 2.0 board. New cards carry their meeting badge and quote.</li>
+      </ol>
+      <div class="panel proto">
+        <div class="proto-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">app.flowpilot.example / northwind-labs</span><a class="btn primary" style="padding:6px 12px;font-size:13px" href="prototype.html#meeting" target="_blank" rel="noopener">Open full screen</a></div>
+        <iframe src="prototype.html#dashboard" title="FlowPilot interactive prototype" loading="lazy"></iframe>
+      </div>
+      <div class="screens">
+        <a href="prototype.html" target="_blank" rel="noopener">Onboarding<small>Workspace · role · connect</small></a>
+        <a href="prototype.html#dashboard" target="_blank" rel="noopener">Dashboard<small>Priorities · deadlines</small></a>
+        <a href="prototype.html#assistant" target="_blank" rel="noopener">AI assistant<small>Ask · draft tasks</small></a>
+        <a href="prototype.html#projects" target="_blank" rel="noopener">Projects<small>List · board · detail</small></a>
+        <a href="prototype.html#tasks" target="_blank" rel="noopener">Tasks<small>Create · assign · prioritize</small></a>
+        <a href="prototype.html#meeting" target="_blank" rel="noopener">AI meeting notes<small>Summary → action items</small></a>
+        <a href="prototype.html#documents" target="_blank" rel="noopener">Documents<small>Search with citations</small></a>
+        <a href="prototype.html#notifications" target="_blank" rel="noopener">Notifications<small>Important first</small></a>
+        <a href="prototype.html#analytics" target="_blank" rel="noopener">Analytics<small>Throughput · workload</small></a>
+        <a href="prototype.html#settings" target="_blank" rel="noopener">Settings<small>Members · roles</small></a>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="s" id="outcomes">
+      <div class="s-head"><span class="s-num">11 · MEASURING SUCCESS</span><h2>What would tell us this works.</h2></div>
+      <div class="metrics">
+        <div class="panel metric"><span class="eyebrow">North star</span><div class="from-to"><s>25 min</s>→ 3 min</div><p>Median time from meeting end to tasks created, per planning meeting.</p></div>
+        <div class="panel metric"><span class="eyebrow">Completeness</span><div class="from-to"><s>52%</s>→ 90%</div><p>Share of spoken action items that end up as tasks with an owner and a date.</p></div>
+        <div class="panel metric"><span class="eyebrow">Trust guardrail</span><div class="from-to">&lt; 10%</div><p>Tasks reassigned or deleted by their owner within 48 hours of creation.</p></div>
+      </div>
+      <div class="prose">
+        <p><b>What I learned.</b> The interesting design problem in AI products is the moment between the model’s output and the user’s commitment. Most of this project’s decisions live in that one review screen.</p>
+      </div>
+      <div class="s-head" style="gap:6px"><h3 style="font-size:20px">Next steps</h3></div>
+      <ul class="next">
+        <li>Run 5–6 moderated tests with project leads on the review flow, then a 2-week pilot with one team.</li>
+        <li>Design the Slack entry point: review and create tasks from a thread without opening FlowPilot.</li>
+        <li>Explore an owner-side “accept or push back” step for tasks assigned from meetings.</li>
+        <li>Accessibility audit: screen-reader order for the review cards and keyboard-only board moves.</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>FlowPilot is a concept project. Company, people and data in the prototype are fictional.</span>
+  <span>Built with HTML, CSS and vanilla JavaScript · no tracking</span>
+</footer>
+
+</div>
+</body>
+</html>
