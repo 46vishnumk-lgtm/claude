@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Isofiniti · Retail product inquiries</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/Inter-Medium.otf"); }
+      @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/Inter-SemiBold.otf"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/Inter-Bold.otf"); }
+      :root {
+        --bg: #f7f8fa; --ink: #111113; --mute: #6b7280; --line: #e7e9ef;
+        --blue: #3d7bf7; --lav: #e4defd;
+        --red: #d21a1a; --red-deep: #8e0f12;
+        --card-shadow: 0 2px 6px rgba(17, 17, 19, .04), 0 24px 60px rgba(40, 60, 110, .12);
+      }
+      body { margin: 0; background: var(--bg); font-family: "Inter", sans-serif; color: var(--ink); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+
+      /* type */
+      .line { position: absolute; left: 0; right: 0; display: flex; justify-content: center; align-items: center; font-weight: 600; letter-spacing: -0.02em; }
+      .ch { display: inline-block; white-space: pre; }
+      .wd { display: inline-block; white-space: nowrap; }
+      .cursor { display: inline-block; width: 30px; height: 6px; margin-left: 10px; align-self: flex-end; margin-bottom: 0.25em; background: var(--blue); border-radius: 2px; }
+      .blue { color: var(--blue); }
+
+      /* cards */
+      .card { position: absolute; background: #fff; border-radius: 22px; box-shadow: var(--card-shadow); padding: 26px 30px; box-sizing: border-box; }
+      .card-h { display: flex; align-items: center; gap: 16px; font-size: 26px; font-weight: 600; }
+      .ico { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(145deg, #5b93ff, #3d7bf7); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(61, 123, 247, .35); }
+      .ico svg { width: 26px; height: 26px; }
+      .big { font-size: 46px; font-weight: 500; letter-spacing: -0.02em; margin-top: 18px; }
+      .big small { font-size: 20px; color: var(--mute); margin-left: 8px; letter-spacing: 0; }
+      .sub { font-size: 18px; color: var(--mute); margin-top: 6px; }
+      .bars { display: flex; gap: 14px; align-items: flex-end; height: 64px; margin-top: 16px; }
+      .bars i { display: block; width: 12px; background: var(--blue); border-radius: 3px; }
+
+      /* S1 */
+      #s1-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 300px; font-weight: 500; letter-spacing: -0.04em;
+                  background: linear-gradient(100deg, var(--blue) 20%, #a9ccff 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #s1-stage { position: absolute; left: 0; right: 0; top: 70px; height: 800px; perspective: 2200px; }
+      .win { position: absolute; top: 0; width: 820px; height: 760px; border-radius: 26px; background: #fff; box-shadow: var(--card-shadow); overflow: hidden; }
+      #win-before { left: 110px; transform-origin: 100% 50%; }
+      #win-after { right: 110px; transform-origin: 0% 50%; }
+      .chrome { height: 52px; display: flex; align-items: center; gap: 9px; padding: 0 22px; border-bottom: 1px solid var(--line); }
+      .chrome i { width: 13px; height: 13px; border-radius: 50%; background: #e3e5ea; }
+      .chrome span { margin-left: 18px; height: 26px; flex: 1; border-radius: 8px; background: #f2f3f6; font-size: 14px; color: var(--mute); display: flex; align-items: center; padding-left: 14px; }
+      .pill { position: absolute; top: 74px; left: 24px; padding: 7px 16px; border-radius: 999px; font-size: 17px; font-weight: 600; z-index: 5; }
+      .pill.bad { background: #fde8e8; color: var(--red); }
+      .pill.good { background: #e6efff; color: var(--blue); }
+
+      /* before: cluttered */
+      .mess { position: absolute; inset: 52px 0 0 0; background: #f4f4f6; }
+      .m-ban { position: absolute; left: 0; right: 0; top: 0; height: 58px; background: #ffe45c; font-size: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; letter-spacing: .04em; }
+      .m-nav { position: absolute; left: 20px; right: 20px; top: 70px; display: flex; flex-wrap: wrap; gap: 6px; }
+      .m-nav b { font-size: 13px; font-weight: 500; padding: 4px 8px; background: #dfe1e6; border-radius: 4px; }
+      .m-grid { position: absolute; left: 20px; right: 20px; top: 150px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .m-grid div { height: 110px; border-radius: 6px; font-size: 12px; padding: 6px; color: #444; box-sizing: border-box; }
+      .m-fine { position: absolute; left: 20px; right: 20px; top: 400px; font-size: 12px; line-height: 1.35; color: #888; }
+      .pop { position: absolute; background: #fff; border-radius: 14px; box-shadow: 0 14px 34px rgba(0, 0, 0, .16); padding: 16px 20px; font-size: 19px; font-weight: 600; width: 300px; box-sizing: border-box; }
+      .pop small { display: block; font-size: 14px; font-weight: 500; color: var(--mute); margin-top: 6px; }
+      .pop .x { position: absolute; top: 8px; right: 12px; font-size: 16px; color: #aaa; }
+
+      /* after: clean product page */
+      .pp { position: absolute; inset: 52px 0 0 0; display: grid; grid-template-columns: 360px 1fr; gap: 36px; padding: 70px 44px 0; }
+      .pp-img { height: 440px; border-radius: 22px; background: linear-gradient(160deg, #eef3ff, #d9e5ff); display: flex; align-items: center; justify-content: center; }
+      .pp-shirt { width: 190px; height: 250px; border-radius: 36px 36px 18px 18px; background: linear-gradient(160deg, #6f9dff, #3d7bf7); box-shadow: 0 30px 50px rgba(61, 123, 247, .35); }
+      .pp-name { font-size: 40px; font-weight: 600; letter-spacing: -0.02em; margin-top: 8px; }
+      .pp-price { font-size: 30px; font-weight: 500; color: var(--mute); margin-top: 10px; }
+      .sizes { display: flex; gap: 10px; margin-top: 28px; }
+      .sizes b { width: 58px; height: 50px; border-radius: 12px; border: 1.5px solid var(--line); font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+      .sizes b.on { border-color: var(--blue); color: var(--blue); background: #f0f5ff; }
+      .ask { margin-top: 28px; height: 70px; border-radius: 999px; background: linear-gradient(90deg, #5b93ff, var(--blue)); color: #fff; font-size: 22px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 30px rgba(61, 123, 247, .35); }
+      .bubble { position: absolute; padding: 16px 22px; border-radius: 20px; font-size: 20px; font-weight: 500; box-shadow: 0 12px 30px rgba(40, 60, 110, .14); white-space: nowrap; }
+      #b-q { right: 60px; top: 540px; background: #fff; border: 1px solid var(--line); border-bottom-right-radius: 6px; }
+      #b-a { right: 170px; top: 630px; background: var(--blue); color: #fff; border-bottom-left-radius: 6px; }
+
+      /* S2 */
+      #s2 { background: linear-gradient(180deg, #ffffff 0%, #f6f4ff 45%, var(--lav) 100%); }
+      #s2-stage { position: absolute; left: 0; right: 0; top: 230px; height: 1400px; display: flex; justify-content: center; }
+      #phone { width: 520px; height: 1060px; border-radius: 76px; background: #16161a; padding: 18px; box-sizing: border-box; box-shadow: 0 50px 110px rgba(60, 50, 140, .35); transform-origin: 50% 30%; }
+      .screen { position: relative; width: 100%; height: 100%; border-radius: 60px; background: #fff; overflow: hidden; }
+      .island { position: absolute; top: 16px; left: 50%; width: 130px; height: 36px; margin-left: -65px; border-radius: 20px; background: #16161a; }
+      .ph-body { padding: 92px 34px 0; }
+      .ph-title { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; }
+      .steps { display: flex; justify-content: space-between; margin-top: 26px; font-size: 18px; font-weight: 600; color: #8a909c; }
+      .track { margin-top: 12px; height: 8px; border-radius: 4px; background: #eef0f4; overflow: hidden; }
+      #fill { width: 100%; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #5b93ff, var(--blue)); transform-origin: 0 50%; }
+      .item { margin-top: 30px; display: flex; gap: 18px; align-items: center; padding: 18px; border-radius: 22px; background: #f6f8fc; }
+      .item-img { width: 92px; height: 104px; border-radius: 16px; background: linear-gradient(160deg, #6f9dff, #3d7bf7); }
+      .fld { margin-top: 16px; height: 74px; border-radius: 18px; border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 20px; color: var(--mute); box-sizing: border-box; }
+      .fld .ok { width: 30px; height: 30px; border-radius: 50%; background: #e8f7ee; color: #19a35b; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+      #pay { position: absolute; left: 34px; right: 34px; bottom: 54px; height: 92px; border-radius: 999px; background: linear-gradient(90deg, #5b93ff, var(--blue)); color: #fff; font-size: 28px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 34px rgba(61, 123, 247, .4); }
+      #done { position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+      #check { width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(145deg, #5b93ff, var(--blue)); display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(61, 123, 247, .4); }
+      #done b { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+
+      /* S3 */
+      #s3 { background: radial-gradient(120% 90% at 50% 40%, #e3262a 0%, var(--red) 45%, var(--red-deep) 100%); }
+      #s3-glow { position: absolute; left: -10%; right: -10%; bottom: -260px; height: 520px; background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0)); }
+      #hub { position: absolute; left: 50%; top: 270px; width: 640px; height: 330px; margin-left: -320px; border-radius: 36px; background: linear-gradient(160deg, #ffffff, #f1f1f4); box-shadow: 0 40px 90px rgba(60, 0, 0, .45); display: flex; align-items: center; justify-content: center; }
+      #hub svg { width: 470px; height: auto; }
+      .node { position: absolute; width: 270px; padding: 18px 22px; border-radius: 18px; background: #fff; box-shadow: 0 20px 44px rgba(60, 0, 0, .3); box-sizing: border-box; }
+      .node b { display: block; font-size: 22px; font-weight: 600; }
+      .node span { display: block; font-size: 16px; color: var(--mute); margin-top: 6px; }
+      .node i { display: block; height: 8px; border-radius: 4px; margin-top: 12px; background: linear-gradient(90deg, var(--red) 60%, #eef0f4 60%); }
+      #wires { position: absolute; inset: 0; }
+      #s3-vo1 { top: 680px; height: 90px; font-size: 52px; color: #fff; font-weight: 500; }
+      #s3-vo1 .cursor { background: #fff; }
+      #cta { position: absolute; left: 50%; top: 800px; width: 860px; margin-left: -430px; height: 104px; border-radius: 999px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); box-shadow: 0 24px 60px rgba(60, 0, 0, .4); }
+      #cta b { color: var(--red); font-weight: 600; margin-left: 0.25em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="22.5">
+
+      <!-- S1a · Hook (0 – 4.1s) -->
+      <section id="s1a" class="clip" data-start="0" data-duration="4.1" data-track-index="0">
+        <div class="card" id="k1" style="left:90px;top:90px;width:420px">
+          <div class="card-h"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Inquiries</div>
+          <div class="big">148<small>open</small></div><div class="sub">32 waiting since yesterday</div>
+        </div>
+        <div class="card" id="k2" style="right:90px;top:120px;width:380px">
+          <div class="card-h"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>Avg. reply</div>
+          <div class="big">26<small>hours</small></div>
+          <div class="bars"><i style="height:30%"></i><i style="height:55%"></i><i style="height:42%"></i><i style="height:80%"></i><i style="height:100%"></i></div>
+        </div>
+        <div class="card" id="k3" style="left:180px;bottom:90px;width:400px">
+          <div class="card-h"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>Inbox</div>
+          <div class="big">62<small>new emails</small></div>
+        </div>
+        <div class="card" id="k4" style="right:200px;bottom:110px;width:400px">
+          <div class="card-h"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M9 9a3 3 0 1 1 4 2.8c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="18" r=".6" fill="#fff"/></svg></div>Product Q&amp;A</div>
+          <div class="big">0<small>answers online</small></div>
+        </div>
+        <div class="line" id="hook" data-chars style="top:470px;height:140px;font-size:64px">Are product inquiries slowing down your retail team?</div>
+        <div id="s1-giant">Inquiries</div>
+      </section>
+
+      <!-- S1b · Split screen (4.1 – 9.2s) -->
+      <section id="s1b" class="clip" data-start="4.1" data-duration="5.1" data-track-index="0">
+        <div id="s1-stage">
+          <div class="win" id="win-before" data-layout-allow-occlusion data-layout-allow-overlap>
+            <div class="chrome"><i></i><i></i><i></i><span>shop-example.com/products?id=88213&amp;ref=sale</span></div>
+            <div class="mess">
+              <div class="m-ban">MEGA SALE · MEGA SALE · MEGA SALE</div>
+              <div class="m-nav" id="m-nav"></div>
+              <div class="m-grid" id="m-grid"></div>
+              <div class="m-fine" id="m-fine"></div>
+            </div>
+            <div class="pop" id="p1" style="left:60px;top:200px"><span class="x">✕</span>Questions about this item?<small>Email sales@… and allow 3–5 days</small></div>
+            <div class="pop" id="p2" style="left:420px;top:300px"><span class="x">✕</span>Sizes &amp; stock<small>Please call the store</small></div>
+            <div class="pop" id="p3" style="left:120px;top:440px"><span class="x">✕</span>Sign up for 10% off!<small>Enter email to continue</small></div>
+            <div class="pop" id="p4" style="left:400px;top:560px"><span class="x">✕</span>Chat is offline<small>Leave a message</small></div>
+            <div class="pill bad">Before</div>
+          </div>
+          <div class="win" id="win-after">
+            <div class="chrome"><i></i><i></i><i></i><span>yourstore.com/linen-overshirt</span></div>
+            <div class="pp">
+              <div class="pp-img" id="pp-img"><div class="pp-shirt"></div></div>
+              <div>
+                <div class="pp-name" id="pp-name">Linen Overshirt</div>
+                <div class="pp-price" id="pp-price">$89</div>
+                <div class="sizes" id="pp-sizes"><b>S</b><b class="on">M</b><b>L</b><b>XL</b></div>
+                <div class="ask" id="pp-ask">Ask about this product</div>
+              </div>
+            </div>
+            <div class="bubble" id="b-q">Is this in stock in M?</div>
+            <div class="bubble" id="b-a">Yes, it ships today.</div>
+            <div class="pill good">After</div>
+          </div>
+        </div>
+        <div class="line" id="s1-text" data-chars style="top:900px;height:110px;font-size:60px">Make product inquiries <span class="blue">easier.</span></div>
+      </section>
+
+      <!-- S2 · Mobile checkout (9.2 – 15.0s) -->
+      <section id="s2" class="clip" data-start="9.2" data-duration="5.8" data-track-index="0">
+        <div class="line" id="s2-text" data-chars style="top:70px;height:110px;font-size:62px">A clear path for <span class="blue">customers.</span></div>
+        <div id="s2-stage">
+          <div id="phone">
+            <div class="screen">
+              <div class="island"></div>
+              <div class="ph-body">
+                <div class="ph-title">Checkout</div>
+                <div class="steps"><span id="st1">Cart</span><span id="st2">Details</span><span id="st3">Payment</span></div>
+                <div class="track"><div id="fill"></div></div>
+                <div class="item"><div class="item-img"></div>
+                  <div><div style="font-size:24px;font-weight:600">Linen Overshirt</div><div style="font-size:18px;color:#6b7280;margin-top:4px">Size M</div><div style="font-size:22px;font-weight:600;margin-top:8px">$89</div></div></div>
+                <div class="fld" id="fd1">Name<span class="ok">✓</span></div>
+                <div class="fld" id="fd2">Email<span class="ok">✓</span></div>
+                <div class="fld" id="fd3">Address<span class="ok">✓</span></div>
+              </div>
+              <div id="pay">Pay $89</div>
+              <div id="done" data-layout-allow-occlusion>
+                <div id="check"><svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg></div>
+                <b>Order confirmed</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- S3 · Isofiniti (15.0 – 22.5s) -->
+      <section id="s3" class="clip" data-start="15" data-duration="7.5" data-track-index="0">
+        <div id="s3-glow"></div>
+        <svg id="wires" viewBox="0 0 1920 1080" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="3">
+          <path id="w1" d="M600 290 H720 Q760 290 760 330 V400 Q760 435 800 435"/>
+          <path id="w2" d="M600 600 H720 Q760 600 760 560 V480 Q760 445 800 445"/>
+          <path id="w3" d="M1320 290 H1200 Q1160 290 1160 330 V400 Q1160 435 1120 435"/>
+          <path id="w4" d="M1320 600 H1200 Q1160 600 1160 560 V480 Q1160 445 1120 445"/>
+        </svg>
+        <div class="node" id="n1" style="left:330px;top:230px"><b>Product page</b><span>Clear details</span><i></i></div>
+        <div class="node" id="n2" style="left:330px;top:540px"><b>Inquiries</b><span>Answered fast</span><i></i></div>
+        <div class="node" id="n3" style="left:1320px;top:230px"><b>Checkout</b><span>Three simple steps</span><i></i></div>
+        <div class="node" id="n4" style="left:1320px;top:540px"><b>Orders</b><span>Fewer drop-offs</span><i></i></div>
+        <div id="hub">
+          <svg viewBox="0 0 2000 450" aria-label="Isofiniti">
+            <g fill="#111113">
+              <path d="M7 0h159v43H49v117H7z"/>
+              <rect x="123" y="115" width="45" height="220"/>
+              <path d="M419 180H375C372 160 357 153 337 153C314 153 300 162 300 176C300 191 317 196 345 203L370 209C410 219 426 240 426 270C426 312 393 338 342 338C289 338 255 312 248 268H293C297 286 315 296 342 296C366 296 380 287 380 272C380 257 365 251 335 244L310 238C272 229 256 208 256 179C256 139 290 111 338 111C384 111 414 135 419 180Z"/>
+              <path fill-rule="evenodd" d="M607 111C671 111 716 158 716 225C716 292 671 338 607 338C543 338 498 292 498 225C498 158 543 111 607 111ZM607 153C568 153 542 182 542 225C542 268 568 296 607 296C646 296 670 268 670 225C670 182 646 153 607 153Z"/>
+              <path d="M793 115h157v41H838v57h95v41h-95v81h-45z"/>
+              <rect x="1025" y="115" width="44" height="220"/>
+            </g>
+            <path fill="#d21a1a" d="M1192 269L1345 117V179L1192 331Z"/>
+            <path fill="#111113" stroke="#f7f7f9" stroke-width="14" paint-order="stroke" d="M1150 117H1194L1346 269V331H1342L1150 139Z"/>
+            <g fill="#111113">
+              <rect x="1150" y="117" width="43" height="214"/>
+              <rect x="1346" y="117" width="43" height="214"/>
+              <rect x="1470" y="115" width="44" height="220"/>
+              <path d="M1583 115h180v41h-67v179h-46V156h-67z"/>
+              <rect x="1832" y="115" width="44" height="220"/>
+              <path d="M1993 450h-160v-43h117V290h43z"/>
+            </g>
+          </svg>
+        </div>
+        <div class="line" id="s3-vo1" data-chars>A professional website may improve your customer journey.</div>
+        <div id="cta">Send us your website for a <b>quick review</b></div>
+      </section>
+
+      <audio id="vo" src="assets/vo.wav" data-start="15.4" data-duration="6.1" data-track-index="1" data-volume="1"></audio>
+    </div>
+
+    <script>
+      // Filler for the cluttered "before" page.
+      const nav = document.getElementById("m-nav");
+      for (let i = 1; i <= 22; i++) nav.insertAdjacentHTML("beforeend", `<b>Category ${i}</b>`);
+      const grid = document.getElementById("m-grid");
+      for (let i = 0; i < 10; i++) grid.insertAdjacentHTML("beforeend", `<div style="background:hsl(${(i * 47) % 360},55%,86%)">Item ${i + 1} · see details</div>`);
+      document.getElementById("m-fine").textContent = "Shipping, returns and sizing information is available on request. Prices may vary in store. ".repeat(9);
+
+      // Split [data-chars] lines into characters, kept together per word.
+      document.querySelectorAll("[data-chars]").forEach((el) => {
+        const walk = (node) => [...node.childNodes].map((n) => {
+          if (n.nodeType === 3) return n.textContent.split(/(\s+)/).map((w) => /^\s+$/.test(w) ? `<span class="ch"> </span>`
+            : w ? `<span class="wd">${[...w].map((c) => `<span class="ch">${c}</span>`).join("")}</span>` : "").join("");
+          return `<span class="${n.className}">${walk(n)}</span>`;
+        }).join("");
+        el.innerHTML = walk(el) + `<span class="cursor"></span>`;
+      });
+
+      const tl = gsap.timeline({ paused: true });
+
+      // Characters blur and slide in from the right, a blue cursor rides the end, then the line blurs out.
+      const reveal = (sel, at, outAt) => {
+        const chars = document.querySelectorAll(sel + " .ch");
+        tl.fromTo(chars, { opacity: 0, x: 26, filter: "blur(10px)" },
+          { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.45, stagger: 0.022, ease: "power3.out" }, at);
+        tl.fromTo(sel + " .cursor", { opacity: 0 }, { opacity: 1, duration: 0.1 }, at);
+        tl.to(sel + " .cursor", { opacity: 0, duration: 0.12, repeat: 5, yoyo: true, ease: "none" }, at + chars.length * 0.022 + 0.3);
+        if (outAt != null) tl.to(sel, { opacity: 0, filter: "blur(14px)", duration: 0.4, ease: "power2.in" }, outAt);
+      };
+
+      // S1a · hook with floating dashboard cards, then a giant gradient word
+      ["#k1", "#k2", "#k3", "#k4"].forEach((k, i) => {
+        tl.fromTo(k, { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "expo.out" }, 0.1 + i * 0.12);
+        tl.to(k, { y: i % 2 ? -18 : 18, duration: 1.2, ease: "sine.inOut" }, 1.4);
+        tl.to(k, { opacity: 0, filter: "blur(10px)", duration: 0.4 }, 2.6);
+      });
+      reveal("#hook", 0.25, 2.65);
+      tl.fromTo("#s1-giant", { opacity: 0, scale: 0.8, filter: "blur(20px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 2.85);
+      tl.to("#s1-giant", { scale: 2.6, opacity: 0, filter: "blur(16px)", duration: 0.65, ease: "power3.in" }, 3.45);
+
+      // S1b · split screen
+      const b = 4.1;
+      tl.fromTo("#win-before", { opacity: 0, x: -160, rotationY: 0 }, { opacity: 1, x: 0, rotationY: 8, duration: 1.1, ease: "expo.out" }, b);
+      tl.fromTo("#win-after", { opacity: 0, x: 160, rotationY: 0 }, { opacity: 1, x: 0, rotationY: -8, duration: 1.1, ease: "expo.out" }, b + 0.1);
+      ["#p1", "#p2", "#p3", "#p4"].forEach((p, i) => {
+        const t = b + 0.6 + i * 0.45;
+        tl.fromTo(p, { opacity: 0, scale: 0.7, rotation: 0 }, { opacity: 1, scale: 1, rotation: [-5, 4, -3, 6][i], duration: 0.4, ease: "back.out(2)" }, t);
+        tl.to(p, { x: 5, duration: 0.07, repeat: 9, yoyo: true, ease: "none" }, t + 0.4);
+      });
+      tl.fromTo(["#pp-img", "#pp-name", "#pp-price", "#pp-sizes", "#pp-ask"], { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power3.out" }, b + 0.5);
+      tl.to("#pp-ask", { scale: 0.96, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.inOut" }, b + 1.8);
+      tl.fromTo("#b-q", { opacity: 0, y: 20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, b + 2.1);
+      tl.fromTo("#b-a", { opacity: 0, y: 20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, b + 2.8);
+      reveal("#s1-text", b + 1.2);
+      tl.to(["#s1-stage", "#s1-text"], { opacity: 0, filter: "blur(12px)", duration: 0.45, ease: "power2.in" }, 8.75);
+
+      // S2 · phone rises, then a slow push-in on the checkout
+      const c = 9.2;
+      tl.fromTo("#phone", { y: 700 }, { y: 0, duration: 1.2, ease: "expo.out" }, c);
+      tl.fromTo("#phone", { scale: 0.92 }, { scale: 1.12, duration: 4.6, ease: "power1.inOut" }, c + 1.2);
+      reveal("#s2-text", c + 0.3);
+      tl.set("#st1", { color: "#3d7bf7" }, c);
+      tl.fromTo("#fill", { scaleX: 0.05 }, { scaleX: 0.5, duration: 0.9, ease: "power2.inOut" }, c + 1.2);
+      tl.set("#st2", { color: "#3d7bf7" }, c + 2.0);
+      ["#fd1", "#fd2", "#fd3"].forEach((f, i) => {
+        tl.fromTo(f + " .ok", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, c + 1.4 + i * 0.3);
+        tl.to(f, { borderColor: "#3d7bf7", duration: 0.3 }, c + 1.4 + i * 0.3);
+      });
+      tl.to("#fill", { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, c + 2.5);
+      tl.set("#st3", { color: "#3d7bf7" }, c + 3.3);
+      tl.to("#pay", { scale: 0.95, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.inOut" }, c + 3.5);
+      tl.fromTo("#done", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, c + 3.95);
+      tl.fromTo("#check", { scale: 0.4 }, { scale: 1, duration: 0.6, ease: "back.out(2.2)" }, c + 3.95);
+      tl.to(["#s2-text", "#s2-stage"], { opacity: 0, filter: "blur(12px)", duration: 0.4, ease: "power2.in" }, 14.6);
+
+      // S3 · brand hub, then the call to action (voiceover 15.4s, second line 19.2s)
+      const d = 15.0;
+      tl.fromTo("#s3-glow", { opacity: 0 }, { opacity: 1, duration: 1 }, d);
+      tl.fromTo("#hub", { opacity: 0, scale: 0.85, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.9, ease: "expo.out" }, d + 0.15);
+      ["#n1", "#n2", "#n3", "#n4"].forEach((n, i) => {
+        tl.fromTo(n, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, d + 0.6 + i * 0.12);
+      });
+      ["#w1", "#w2", "#w3", "#w4"].forEach((w, i) => {
+        tl.fromTo(w, { strokeDasharray: 400, strokeDashoffset: 400 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, d + 0.9 + i * 0.1);
+      });
+      reveal("#s3-vo1", 15.4);
+      tl.to(["#n1", "#n2", "#n3", "#n4", "#wires"], { opacity: 0, filter: "blur(10px)", duration: 0.5, ease: "power2.in" }, 18.7);
+      tl.to(["#hub", "#s3-vo1"], { y: -40, duration: 0.8, ease: "power3.inOut" }, 18.7);
+      tl.fromTo("#cta", { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, 19.1);
+      tl.to("#cta", { scale: 1.03, duration: 0.35, yoyo: true, repeat: 1, ease: "sine.inOut" }, 20.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

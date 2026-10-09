@@ -1,0 +1,486 @@
+{
+  "id": "isofiniti-retail-16x9",
+  "title": "Isofiniti \u00b7 Retail product inquiries",
+  "version": 3,
+  "path": "/home/user/claude/isofiniti-hf",
+  "src": "video.mp4",
+  "w": 1920,
+  "h": 1080,
+  "fps": 30,
+  "duration": 22.5,
+  "reference": "SaasAI08_10V_1.mp4 (Isofiniti store-systems video)",
+  "brand": {
+    "colors": [
+      {
+        "id": "red",
+        "name": "Isofiniti red",
+        "v": "#D21A1A"
+      },
+      {
+        "id": "ink",
+        "name": "Ink",
+        "v": "#111113"
+      },
+      {
+        "id": "blue",
+        "name": "UI blue",
+        "v": "#3D7BF7"
+      },
+      {
+        "id": "bg",
+        "name": "Background",
+        "v": "#F7F8FA"
+      }
+    ],
+    "fonts": [
+      {
+        "id": "head",
+        "name": "Headlines",
+        "v": "Inter"
+      }
+    ],
+    "logo": "assets/logo.svg"
+  },
+  "audio": {
+    "music": null,
+    "voiceover": "assets/vo.wav",
+    "musicVol": 0.6,
+    "sfxVol": 0.8
+  },
+  "assets": [
+    {
+      "id": "assets/logo.svg",
+      "name": "logo.svg",
+      "type": "image",
+      "from": "Redrawn from user's logo"
+    },
+    {
+      "id": "assets/vo.wav",
+      "name": "vo.wav",
+      "type": "audio",
+      "from": "Hyperframes TTS (am_michael)"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "S1",
+      "name": "Hook",
+      "t": [
+        0,
+        4.1
+      ],
+      "els": [
+        {
+          "id": "kpis",
+          "label": "Dashboard cards",
+          "t": [
+            0.1,
+            3.0
+          ],
+          "box": [
+            4,
+            8,
+            92,
+            84
+          ],
+          "src": "index.html#k1-k4",
+          "props": {
+            "c1": {
+              "type": "text",
+              "label": "Inquiries",
+              "v": "148 open"
+            },
+            "c2": {
+              "type": "text",
+              "label": "Avg. reply",
+              "v": "26 hours"
+            },
+            "c3": {
+              "type": "text",
+              "label": "Inbox",
+              "v": "62 new emails"
+            },
+            "c4": {
+              "type": "text",
+              "label": "Product Q&A",
+              "v": "0 answers online"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Cards float in and drift, then blur out"
+            }
+          }
+        },
+        {
+          "id": "hook",
+          "label": "Hook line",
+          "t": [
+            0.25,
+            3.05
+          ],
+          "box": [
+            3,
+            43,
+            94,
+            13
+          ],
+          "src": "index.html#hook",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Are product inquiries slowing down your retail team?"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Letters blur in from the right with a blue cursor"
+            }
+          }
+        },
+        {
+          "id": "giant",
+          "label": "Giant word",
+          "t": [
+            2.85,
+            4.1
+          ],
+          "box": [
+            15,
+            30,
+            70,
+            40
+          ],
+          "src": "index.html#s1-giant",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Inquiries"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Blue gradient word zooms through the camera"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "Split screen",
+      "t": [
+        4.1,
+        9.2
+      ],
+      "els": [
+        {
+          "id": "before",
+          "label": "Cluttered site",
+          "t": [
+            4.1,
+            9.2
+          ],
+          "box": [
+            5.7,
+            6.5,
+            42.7,
+            70.4
+          ],
+          "src": "index.html#win-before",
+          "props": {
+            "label": {
+              "type": "text",
+              "label": "Text",
+              "v": "Before"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Popups pile up and shake"
+            }
+          }
+        },
+        {
+          "id": "after",
+          "label": "Clean product page",
+          "t": [
+            4.2,
+            9.2
+          ],
+          "box": [
+            51.6,
+            6.5,
+            42.7,
+            70.4
+          ],
+          "src": "index.html#win-after",
+          "props": {
+            "product": {
+              "type": "text",
+              "label": "Text",
+              "v": "Linen Overshirt"
+            },
+            "price": {
+              "type": "text",
+              "label": "Text",
+              "v": "$89"
+            },
+            "cta": {
+              "type": "text",
+              "label": "Text",
+              "v": "Ask about this product"
+            },
+            "q": {
+              "type": "text",
+              "label": "Text",
+              "v": "Is this in stock in M?"
+            },
+            "a": {
+              "type": "text",
+              "label": "Text",
+              "v": "Yes, it ships today."
+            }
+          }
+        },
+        {
+          "id": "s1text",
+          "label": "Headline",
+          "t": [
+            5.3,
+            9.2
+          ],
+          "box": [
+            20,
+            83,
+            60,
+            10
+          ],
+          "src": "index.html#s1-text",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Make product inquiries easier."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "Mobile checkout",
+      "t": [
+        9.2,
+        15.0
+      ],
+      "els": [
+        {
+          "id": "s2text",
+          "label": "Headline",
+          "t": [
+            9.5,
+            15.0
+          ],
+          "box": [
+            20,
+            6.5,
+            60,
+            10
+          ],
+          "src": "index.html#s2-text",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "A clear path for customers."
+            }
+          }
+        },
+        {
+          "id": "phone",
+          "label": "Phone checkout",
+          "t": [
+            9.2,
+            15.0
+          ],
+          "box": [
+            36,
+            21,
+            28,
+            79
+          ],
+          "src": "index.html#phone",
+          "props": {
+            "button": {
+              "type": "text",
+              "label": "Text",
+              "v": "Pay $89"
+            },
+            "done": {
+              "type": "text",
+              "label": "Text",
+              "v": "Order confirmed"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Phone rises, slow push-in, steps fill, tap, check mark"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "Isofiniti",
+      "t": [
+        15.0,
+        22.5
+      ],
+      "els": [
+        {
+          "id": "logo",
+          "label": "Logo card",
+          "t": [
+            15.15,
+            22.5
+          ],
+          "box": [
+            33.3,
+            21,
+            33.4,
+            30.6
+          ],
+          "src": "index.html#hub",
+          "props": {
+            "bg": {
+              "type": "color",
+              "label": "Background",
+              "v": "brand.red"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Hub card with four connected cards, then cards clear"
+            }
+          }
+        },
+        {
+          "id": "nodes",
+          "label": "Journey cards",
+          "t": [
+            15.6,
+            19.2
+          ],
+          "box": [
+            17,
+            21,
+            66,
+            40
+          ],
+          "src": "index.html#n1-n4",
+          "props": {
+            "n1": {
+              "type": "text",
+              "label": "Text",
+              "v": "Product page"
+            },
+            "n2": {
+              "type": "text",
+              "label": "Text",
+              "v": "Inquiries"
+            },
+            "n3": {
+              "type": "text",
+              "label": "Text",
+              "v": "Checkout"
+            },
+            "n4": {
+              "type": "text",
+              "label": "Text",
+              "v": "Orders"
+            }
+          }
+        },
+        {
+          "id": "vo1",
+          "label": "Voiceover line 1",
+          "t": [
+            15.4,
+            22.5
+          ],
+          "box": [
+            5,
+            61,
+            90,
+            9
+          ],
+          "src": "index.html#s3-vo1",
+          "props": {
+            "text": {
+              "type": "longtext",
+              "label": "Text",
+              "v": "A professional website may improve your customer journey."
+            }
+          }
+        },
+        {
+          "id": "cta",
+          "label": "Call to action",
+          "t": [
+            19.1,
+            22.5
+          ],
+          "box": [
+            27.6,
+            74,
+            44.8,
+            9.6
+          ],
+          "src": "index.html#cta",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Send us your website for a quick review"
+            }
+          }
+        },
+        {
+          "id": "voiceover",
+          "label": "Voiceover",
+          "t": [
+            15.4,
+            21.5
+          ],
+          "box": null,
+          "src": "assets/vo.wav",
+          "props": {
+            "text": {
+              "type": "longtext",
+              "label": "Script",
+              "v": "A professional website may improve your customer journey. Send us your website for a quick review."
+            },
+            "voice": {
+              "type": "choice",
+              "label": "Voice",
+              "v": "am_michael",
+              "options": [
+                "am_michael",
+                "am_adam",
+                "af_heart",
+                "af_nova",
+                "bf_emma",
+                "bm_george"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "notes": []
+}
