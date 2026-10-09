@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Isofiniti · Retail product inquiries</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/Inter-SemiBold.otf"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/Inter-Bold.otf"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url("assets/Inter-ExtraBold.otf"); }
+      @font-face { font-family: "Inter"; font-weight: 900; src: url("assets/Inter-Black.otf"); }
+      :root { --red: #e3120b; --ink: #111114; --paper: #f6f4f0; }
+      body { margin: 0; background: var(--ink); font-family: "Inter", sans-serif; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ink); }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .head { position: absolute; left: 60px; right: 60px; color: #fff; font-weight: 800; letter-spacing: -2px; line-height: 1.05; }
+      .w { display: inline-block; margin-right: 0.25em; }
+      .accent { color: var(--red); }
+      .tag { position: absolute; top: 24px; left: 24px; padding: 8px 18px; border-radius: 999px; font-size: 26px; font-weight: 700;
+             letter-spacing: 2px; text-transform: uppercase; }
+
+      /* Scene 1 */
+      #s1-split { position: absolute; left: 0; right: 0; top: 480px; bottom: 0; }
+      #s1-messy { position: absolute; left: 0; top: 0; width: 540px; height: 100%; background: #ddd; overflow: hidden; font-family: serif; color: #333; }
+      .m-page { padding: 90px 20px 0; }
+      .m-banner { background: #900; color: #ff0; font-size: 34px; font-weight: 900; padding: 10px; text-align: center; }
+      .m-menu { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+      .m-menu div { font-size: 18px; background: #bbb; padding: 4px 8px; }
+      .m-menu div:nth-child(3n) { background: #f90; }
+      .m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+      .m-grid div { height: 150px; font-size: 14px; padding: 4px; }
+      .m-fine { font-size: 14px; margin-top: 10px; line-height: 1.2; }
+      .popup { position: absolute; border: 4px solid #000; box-shadow: 8px 8px 0 #0006; font-size: 34px; font-weight: 900;
+               display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; box-sizing: border-box; }
+      .popup::before { content: "✕"; position: absolute; top: 6px; right: 12px; font-size: 22px; }
+      #s1-clean { position: absolute; left: 540px; top: 0; width: 540px; height: 100%; background: var(--paper); color: var(--ink); }
+      .c-page { padding: 96px 40px 0; }
+      .c-nav { display: flex; justify-content: space-between; font-size: 22px; font-weight: 600; opacity: 0.7; }
+      .c-hero { margin-top: 40px; height: 620px; border-radius: 28px; background: linear-gradient(160deg, #e9e3d8, #cfc5b4);
+                display: flex; align-items: center; justify-content: center; }
+      .c-shirt { width: 260px; height: 340px; border-radius: 40px 40px 20px 20px; background: #8a7a63; box-shadow: 0 30px 60px #0003; }
+      .c-name { margin-top: 40px; font-size: 52px; font-weight: 700; letter-spacing: -1px; }
+      .c-price { margin-top: 8px; font-size: 40px; opacity: 0.7; }
+      .btn { height: 100px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; }
+      #s1-cart { margin-top: 36px; background: var(--ink); color: #fff; }
+      #s1-ask { margin-top: 18px; border: 3px solid var(--red); color: var(--red); box-sizing: border-box; }
+      #s1-divider { position: absolute; left: 537px; top: 0; width: 6px; height: 100%; background: var(--red); }
+
+      /* Scene 2 */
+      #s2 { background: radial-gradient(circle at 50% 60%, #2a2a30, var(--ink) 70%); }
+      #s2-stage { position: absolute; left: 0; right: 0; top: 380px; bottom: 0; display: flex; justify-content: center; }
+      #s2-phone { width: 600px; height: 1220px; border-radius: 90px; background: #0c0c0e; padding: 22px; box-sizing: border-box;
+                  box-shadow: 0 60px 120px #0008; transform-origin: 50% 0%; }
+      .screen { position: relative; width: 100%; height: 100%; border-radius: 70px; background: #fff; overflow: hidden; color: var(--ink); }
+      .notch { position: absolute; top: 18px; left: 208px; width: 140px; height: 38px; border-radius: 20px; background: #0c0c0e; }
+      .p-body { padding: 110px 44px 0; }
+      .p-title { font-size: 46px; font-weight: 800; letter-spacing: -1px; }
+      .steps { margin-top: 34px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 600; color: #aaa; }
+      .bar { margin-top: 14px; height: 10px; border-radius: 5px; background: #eee; overflow: hidden; }
+      #s2-fill { width: 100%; height: 100%; background: var(--red); transform-origin: 0 50%; }
+      .order { margin-top: 44px; display: flex; gap: 24px; align-items: center; padding: 24px; border-radius: 28px; background: var(--paper); }
+      .order-img { width: 120px; height: 140px; border-radius: 20px; background: #8a7a63; }
+      .field { margin-top: 22px; height: 92px; border-radius: 22px; border: 2px solid #ddd; padding: 0 26px; display: flex;
+               align-items: center; justify-content: space-between; font-size: 28px; box-sizing: border-box; }
+      .field .ok { color: #1a9e5a; font-weight: 800; }
+      #s2-pay { position: absolute; left: 44px; right: 44px; bottom: 70px; height: 116px; background: var(--red); color: #fff; font-size: 38px; }
+      #s2-done { position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      #s2-check { width: 200px; height: 200px; border-radius: 100px; background: var(--red); color: #fff; font-size: 120px; font-weight: 800;
+                  display: flex; align-items: center; justify-content: center; }
+      .done-txt { margin-top: 40px; font-size: 52px; font-weight: 800; letter-spacing: -1px; }
+
+      /* Scene 3 */
+      #s3 { background: var(--red); }
+      #s3-logo { position: absolute; top: 560px; left: 0; right: 0; text-align: center; color: #fff; font-size: 168px; font-weight: 900; letter-spacing: -6px; }
+      #s3-logo span { color: var(--ink); }
+      .vo { position: absolute; left: 80px; right: 80px; color: #fff; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; letter-spacing: -1px; }
+      #s3-vo1 { top: 1000px; font-size: 58px; font-weight: 600; line-height: 1.2; }
+      #s3-cta { position: absolute; left: 80px; right: 80px; top: 1340px; background: var(--ink); border-radius: 32px; padding: 40px 50px; }
+      #s3-vo2 { position: static; font-size: 64px; font-weight: 800; line-height: 1.15; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="18">
+
+      <!-- S1 · Split screen (0 – 5.5s) -->
+      <section id="s1" class="clip" data-start="0" data-duration="5.5" data-track-index="0">
+        <div id="s1-split">
+          <div id="s1-messy" data-layout-allow-occlusion data-layout-allow-overlap>
+            <div class="m-page">
+              <div class="m-banner">MEGA SALE ★ MEGA SALE</div>
+              <div class="m-menu" id="s1-menu"></div>
+              <div class="m-grid" id="s1-grid"></div>
+              <div class="m-fine" id="s1-fine"></div>
+            </div>
+            <div class="popup" id="pop1" style="left:30px;top:300px;width:420px;height:220px;background:#ffeb3b">SIGN UP NOW!!! 10% OFF*</div>
+            <div class="popup" id="pop2" style="left:70px;top:620px;width:380px;height:200px;background:#00e5ff">Chat with us? (offline)</div>
+            <div class="popup" id="pop3" style="left:20px;top:880px;width:460px;height:180px;background:#ff4081">COOKIES!! Accept all</div>
+            <div class="popup" id="pop4" style="left:60px;top:160px;width:400px;height:160px;background:#76ff03">Questions? Email sales@... or call</div>
+            <div class="tag" style="background:var(--ink);color:#fff">Before</div>
+          </div>
+          <div id="s1-clean">
+            <div class="c-page">
+              <div class="c-nav"><span>STORE</span><span>Shop · About · Cart</span></div>
+              <div class="c-hero" id="s1-hero"><div class="c-shirt"></div></div>
+              <div class="c-name" id="s1-name">Linen Overshirt</div>
+              <div class="c-price" id="s1-price">$89</div>
+              <div class="btn" id="s1-cart">Add to cart</div>
+              <div class="btn" id="s1-ask">Ask about this product</div>
+            </div>
+            <div class="tag" style="background:#fff;color:var(--ink)">After</div>
+          </div>
+          <div id="s1-divider"></div>
+        </div>
+        <div class="head" id="s1-hook" data-words style="top:120px;font-size:74px">Are product inquiries slowing down your retail team?</div>
+        <div class="head" id="s1-title" data-words data-accent-last style="top:150px;font-size:92px">Make product inquiries easier.</div>
+      </section>
+
+      <!-- S2 · Mobile checkout (5.5 – 10.5s) -->
+      <section id="s2" class="clip" data-start="5.5" data-duration="5" data-track-index="0">
+        <div class="head" id="s2-title" data-words data-accent-last style="top:120px;font-size:84px;text-align:center">A clear path for customers.</div>
+        <div id="s2-stage">
+          <div id="s2-phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="p-body">
+                <div class="p-title">Checkout</div>
+                <div class="steps"><span id="st1">1. Cart</span><span id="st2">2. Details</span><span id="st3">3. Pay</span></div>
+                <div class="bar"><div id="s2-fill"></div></div>
+                <div class="order">
+                  <div class="order-img"></div>
+                  <div>
+                    <div style="font-size:32px;font-weight:700">Linen Overshirt</div>
+                    <div style="font-size:26px;opacity:.6;margin-top:6px">Size M · Sand</div>
+                    <div style="font-size:30px;font-weight:600;margin-top:10px">$89</div>
+                  </div>
+                </div>
+                <div class="field" id="f1"><span style="opacity:.5">Name</span><span class="ok">✓</span></div>
+                <div class="field" id="f2"><span style="opacity:.5">Email</span><span class="ok">✓</span></div>
+                <div class="field" id="f3"><span style="opacity:.5">Address</span><span class="ok">✓</span></div>
+              </div>
+              <div class="btn" id="s2-pay">Pay $89</div>
+              <div id="s2-done" data-layout-allow-occlusion><div id="s2-check">✓</div><div class="done-txt">Order confirmed</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- S3 · Logo + CTA (10.5 – 18s) -->
+      <section id="s3" class="clip" data-start="10.5" data-duration="7.5" data-track-index="0">
+        <div id="s3-logo">isofiniti<span>.</span></div>
+        <div class="vo" id="s3-vo1" data-words>A professional website may improve your customer journey.</div>
+        <div id="s3-cta"><div class="vo" id="s3-vo2" data-words>Send us your website for a quick review.</div></div>
+      </section>
+
+      <audio id="vo" src="assets/vo.wav" data-start="11" data-duration="6.1" data-track-index="1" data-volume="1"></audio>
+    </div>
+
+    <script>
+      // Static filler for the cluttered "before" page.
+      const menu = document.getElementById("s1-menu");
+      for (let i = 1; i <= 18; i++) menu.insertAdjacentHTML("beforeend", `<div>Menu ${i}</div>`);
+      const grid = document.getElementById("s1-grid");
+      for (let i = 0; i < 15; i++) grid.insertAdjacentHTML("beforeend", `<div style="background:hsl(${(i * 137) % 360},40%,70%)">Item #${i} see details?</div>`);
+      document.getElementById("s1-fine").textContent = "Lorem ipsum shipping returns policy terms. ".repeat(14);
+
+      // Split [data-words] into word spans.
+      document.querySelectorAll("[data-words]").forEach((el) => {
+        const words = el.textContent.trim().split(/\s+/);
+        el.innerHTML = words.map((w, i) =>
+          `<span class="w${el.hasAttribute("data-accent-last") && i === words.length - 1 ? " accent" : ""}">${w}</span>`).join("");
+      });
+
+      const tl = gsap.timeline({ paused: true });
+      const words = (sel, at, outAt) => {
+        tl.fromTo(`${sel} .w`, { opacity: 0, y: 40, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, stagger: 0.1, ease: "power3.out" }, at);
+        if (outAt != null) tl.to(sel, { opacity: 0, duration: 0.25, ease: "power1.in" }, outAt);
+      };
+
+      // S1
+      tl.fromTo("#s1-split", { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 0);
+      words("#s1-hook", 0.2, 2.35);
+      tl.set("#s1-title", { opacity: 1 }, 0);
+      words("#s1-title", 2.8);
+      [0.65, 1.5, 2.3, 3.15].forEach((t, i) => {
+        tl.fromTo(`#pop${i + 1}`, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, t);
+        tl.to(`#pop${i + 1}`, { x: 4, duration: 0.06, repeat: 20, yoyo: true, ease: "none" }, t + 0.35);
+      });
+      tl.fromTo("#s1-hero", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 0.2);
+      tl.fromTo(["#s1-name", "#s1-price", "#s1-cart", "#s1-ask"], { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.2, ease: "power3.out" }, 0.65);
+      tl.to("#s1-ask", { backgroundColor: "rgba(227,18,11,0.12)", scale: 1.05, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.inOut" }, 3.7);
+
+      // S2
+      const s2 = 5.5;
+      words("#s2-title", s2 + 0.3);
+      tl.fromTo("#s2-phone", { scale: 0.9 }, { scale: 1.12, duration: 5, ease: "power1.inOut" }, s2);
+      tl.fromTo("#s2-phone", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, s2);
+      tl.set("#st1", { color: "#e3120b" }, s2);
+      tl.fromTo("#s2-fill", { scaleX: 0 }, { scaleX: 0.5, duration: 1, ease: "power2.inOut" }, s2 + 0.67);
+      tl.set("#st2", { color: "#e3120b" }, s2 + 1.6);
+      ["#f1", "#f2", "#f3"].forEach((f, i) => {
+        tl.fromTo(`${f} .ok`, { opacity: 0 }, { opacity: 1, duration: 0.3 }, s2 + 0.8 + i * 0.3);
+        tl.to(f, { borderColor: "#111114", duration: 0.3 }, s2 + 0.8 + i * 0.3);
+      });
+      tl.to("#s2-fill", { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, s2 + 2);
+      tl.set("#st3", { color: "#e3120b" }, s2 + 2.8);
+      tl.to("#s2-pay", { scale: 0.94, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.inOut" }, s2 + 2.95);
+      tl.fromTo("#s2-done", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, s2 + 3.45);
+      tl.fromTo("#s2-check", { scale: 0.5 }, { scale: 1, duration: 0.6, ease: "back.out(2.5)" }, s2 + 3.45);
+
+      // S3 (voiceover starts at 11.0s; line 2 at 14.8s)
+      const s3 = 10.5;
+      tl.fromTo("#s3-logo", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.6)" }, s3 + 0.1);
+      words("#s3-vo1", 11.0);
+      tl.fromTo("#s3-cta", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 14.7);
+      words("#s3-vo2", 14.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

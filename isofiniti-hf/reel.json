@@ -1,0 +1,364 @@
+{
+  "id": "isofiniti-retail-reel-hf",
+  "title": "Isofiniti \u00b7 Retail product inquiries",
+  "version": 2,
+  "path": "/home/user/claude/isofiniti-hf",
+  "src": "video.mp4",
+  "w": 1080,
+  "h": 1920,
+  "fps": 30,
+  "duration": 18.0,
+  "reference": "Reel \u00b7 Web Design \u00b7 Retail \u00b7 Problem-awareness",
+  "brand": {
+    "colors": [
+      {
+        "id": "red",
+        "name": "Isofiniti red",
+        "v": "#E3120B"
+      },
+      {
+        "id": "ink",
+        "name": "Ink",
+        "v": "#111114"
+      },
+      {
+        "id": "paper",
+        "name": "Paper",
+        "v": "#F6F4F0"
+      }
+    ],
+    "fonts": [
+      {
+        "id": "head",
+        "name": "Headlines",
+        "v": "Inter"
+      }
+    ],
+    "logo": null
+  },
+  "audio": {
+    "music": null,
+    "voiceover": "assets/vo.wav",
+    "musicVol": 0.6,
+    "sfxVol": 0.8
+  },
+  "assets": [
+    {
+      "id": "assets/vo.wav",
+      "name": "vo.wav",
+      "type": "audio",
+      "from": "Hyperframes TTS (am_michael)"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "S1",
+      "name": "Split screen",
+      "t": [
+        0,
+        5.5
+      ],
+      "els": [
+        {
+          "id": "hook",
+          "label": "Hook",
+          "t": [
+            0.2,
+            2.6
+          ],
+          "box": [
+            6,
+            6,
+            88,
+            16
+          ],
+          "src": "index.html#s1-hook",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Are product inquiries slowing down your retail team?"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Words rise in one by one"
+            }
+          }
+        },
+        {
+          "id": "s1text",
+          "label": "Headline",
+          "t": [
+            2.8,
+            5.5
+          ],
+          "box": [
+            6,
+            6,
+            88,
+            16
+          ],
+          "src": "index.html#s1-title",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "Make product inquiries easier."
+            },
+            "accent": {
+              "type": "color",
+              "label": "Accent word",
+              "v": "brand.red"
+            }
+          }
+        },
+        {
+          "id": "messy",
+          "label": "Cluttered site",
+          "t": [
+            0,
+            5.5
+          ],
+          "box": [
+            0,
+            25,
+            50,
+            75
+          ],
+          "src": "index.html#s1-messy",
+          "props": {
+            "label": {
+              "type": "text",
+              "label": "Label",
+              "v": "Before"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Popups and banners pile up, slight jitter"
+            }
+          }
+        },
+        {
+          "id": "clean",
+          "label": "Clean product page",
+          "t": [
+            0,
+            5.5
+          ],
+          "box": [
+            50,
+            25,
+            50,
+            75
+          ],
+          "src": "index.html#s1-clean",
+          "props": {
+            "label": {
+              "type": "text",
+              "label": "Label",
+              "v": "After"
+            },
+            "product": {
+              "type": "text",
+              "label": "Product name",
+              "v": "Linen Overshirt"
+            },
+            "price": {
+              "type": "text",
+              "label": "Price",
+              "v": "$89"
+            },
+            "cta": {
+              "type": "text",
+              "label": "Inquiry button",
+              "v": "Ask about this product"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "Mobile checkout",
+      "t": [
+        5.5,
+        10.5
+      ],
+      "els": [
+        {
+          "id": "s2text",
+          "label": "Headline",
+          "t": [
+            5.8,
+            10.5
+          ],
+          "box": [
+            6,
+            6,
+            88,
+            12
+          ],
+          "src": "index.html#s2-title",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Text",
+              "v": "A clear path for customers."
+            }
+          }
+        },
+        {
+          "id": "phone",
+          "label": "Phone checkout",
+          "t": [
+            5.5,
+            10.5
+          ],
+          "box": [
+            20,
+            22,
+            60,
+            72
+          ],
+          "src": "index.html#s2-phone",
+          "props": {
+            "steps": {
+              "type": "text",
+              "label": "Steps",
+              "v": "Cart, Details, Pay"
+            },
+            "button": {
+              "type": "text",
+              "label": "Button",
+              "v": "Pay $89"
+            },
+            "done": {
+              "type": "text",
+              "label": "Confirmation",
+              "v": "Order confirmed"
+            },
+            "motion": {
+              "type": "motion",
+              "label": "Motion",
+              "v": "Slow zoom in, step bar fills, tap, check mark"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "Logo + CTA",
+      "t": [
+        10.5,
+        18.0
+      ],
+      "els": [
+        {
+          "id": "logo",
+          "label": "Isofiniti logo",
+          "t": [
+            10.6,
+            18.0
+          ],
+          "box": [
+            15,
+            30,
+            70,
+            12
+          ],
+          "src": "index.html#s3-logo",
+          "props": {
+            "text": {
+              "type": "text",
+              "label": "Wordmark",
+              "v": "isofiniti"
+            },
+            "bg": {
+              "type": "color",
+              "label": "Background",
+              "v": "brand.red"
+            }
+          }
+        },
+        {
+          "id": "vo1",
+          "label": "Voiceover line 1",
+          "t": [
+            11.0,
+            18.0
+          ],
+          "box": [
+            8,
+            52,
+            84,
+            12
+          ],
+          "src": "index.html#s3-vo1",
+          "props": {
+            "text": {
+              "type": "longtext",
+              "label": "Text",
+              "v": "A professional website may improve your customer journey."
+            }
+          }
+        },
+        {
+          "id": "vo2",
+          "label": "Voiceover line 2 / CTA",
+          "t": [
+            14.7,
+            18.0
+          ],
+          "box": [
+            8,
+            70,
+            84,
+            14
+          ],
+          "src": "index.html#s3-vo2",
+          "props": {
+            "text": {
+              "type": "longtext",
+              "label": "Text",
+              "v": "Send us your website for a quick review."
+            }
+          }
+        },
+        {
+          "id": "voiceover",
+          "label": "Voiceover",
+          "t": [
+            11.0,
+            17.1
+          ],
+          "box": null,
+          "src": "assets/vo.wav",
+          "props": {
+            "text": {
+              "type": "longtext",
+              "label": "Script",
+              "v": "A professional website may improve your customer journey. Send us your website for a quick review."
+            },
+            "voice": {
+              "type": "choice",
+              "label": "Voice",
+              "v": "am_michael",
+              "options": [
+                "am_michael",
+                "am_adam",
+                "af_heart",
+                "af_nova",
+                "bf_emma",
+                "bm_george"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "notes": []
+}
