@@ -1,0 +1,7 @@
+node_modules/
+out/frames/
+out/*.wav
+out/*
+!out/isofiniti-showreel.mp4
+!out/isofiniti-showreel-audio.m4a
+!out/storyboard.png

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isofiniti Showreel</title>
+<style>
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-Regular.otf); font-weight: 400; }
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-Medium.otf); font-weight: 500; }
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-SemiBold.otf); font-weight: 600; }
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-Bold.otf); font-weight: 700; }
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-ExtraBold.otf); font-weight: 800; }
+  @font-face { font-family: 'IDisp'; src: url(fonts/InterDisplay-Black.otf); font-weight: 900; }
+  @font-face { font-family: 'JBM'; src: url(fonts/jetbrains-mono-latin-400-normal.woff2); font-weight: 400; }
+  @font-face { font-family: 'JBM'; src: url(fonts/jetbrains-mono-latin-500-normal.woff2); font-weight: 500; }
+  @font-face { font-family: 'JBM'; src: url(fonts/jetbrains-mono-latin-700-normal.woff2); font-weight: 700; }
+
+  :root {
+    --bg: #0F0F11; --white: #FFFFFF; --red: #D01919;
+    --g1: #141417; --g2: #1C1C21; --g3: #2A2A2E; --g4: #55555C; --g5: #8A8A93;
+  }
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  body.play { display: grid; place-items: center; height: 100vh; }
+  #stage {
+    position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: var(--bg); color: var(--white);
+    font-family: 'IDisp', sans-serif; transform-origin: 0 0;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+  body.play #stage { transform-origin: center; }
+  .abs { position: absolute; left: 0; top: 0; }
+  .full { position: absolute; inset: 0; }
+  .mono { font-family: 'JBM', monospace; text-transform: uppercase; letter-spacing: .2em; white-space: pre; }
+  .r { color: var(--red); }
+  .muted { color: var(--g5); }
+  .mask { position: absolute; overflow: hidden; }
+  .mask > * { position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform; }
+  .hide { visibility: hidden; }
+
+  #world { position: absolute; inset: 0; will-change: transform; }
+  #grid {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 80px 80px; background-position: 0 60px;
+  }
+  #gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  #flash { background: #fff; opacity: 0; pointer-events: none; }
+  #grain { position: absolute; inset: 0; width: 1920px; height: 1080px; opacity: .55; pointer-events: none; mix-blend-mode: screen; }
+  #vignette { background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.6) 100%); pointer-events: none; }
+
+  /* HUD */
+  .bk { position: absolute; left: 0; top: 0; }
+  .bk i { position: absolute; background: #fff; display: block; }
+  .hud-lbl { position: absolute; font-size: 14px; color: var(--g5); line-height: 1; }
+
+  /* Slash + cursor */
+  #slash { position: absolute; left: 0; top: 0; width: 2800px; height: 14px; background: var(--red); transform-origin: 50% 50%; }
+  #cursor { position: absolute; left: 952px; top: 532px; width: 16px; height: 16px; background: var(--red); }
+
+  /* Scene 1 */
+  #sheet { position: absolute; left: 60px; top: 284px; width: 1800px; height: 512px; }
+  .cell {
+    position: absolute; width: 150px; height: 64px; box-sizing: border-box;
+    border: 1px solid #26262A; background: rgba(20,20,23,.85);
+    font: 500 15px/62px 'JBM', monospace; color: #5A5A63; text-align: right; padding: 0 14px; white-space: nowrap; overflow: hidden;
+  }
+  .cell.hd { background: #18181C; color: #6A6A73; text-align: center; font-weight: 700; }
+  .cell.err { color: rgba(208,25,25,.85); }
+  .cell.ok { color: #fff; }
+  #sel { position: absolute; border: 2px solid var(--red); background: rgba(208,25,25,.08); box-sizing: border-box; }
+  #sel::after { content: ''; position: absolute; right: -6px; bottom: -6px; width: 9px; height: 9px; background: var(--red); border: 1px solid var(--bg); }
+  .word { position: absolute; left: 0; width: 1920px; top: 430px; text-align: center; font-weight: 900; font-size: 210px; line-height: 1; letter-spacing: -.045em; }
+  .word .ghost { position: absolute; inset: 0; color: var(--red); mix-blend-mode: screen; }
+
+  /* Scene 2 */
+  .big { font-weight: 800; font-size: 150px; letter-spacing: -.045em; line-height: 1; }
+
+  /* Scene 3 */
+  #panel { position: absolute; left: 1120px; top: 220px; width: 640px; height: 640px; }
+  #pbox { position: absolute; inset: 0; background: var(--g1); border: 1px solid #26262A; box-sizing: border-box; transform-origin: 50% 50%; }
+  #pdots { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.2px); background-size: 20px 20px; background-position: 10px 10px; }
+  .pv { position: absolute; inset: 1px; background-color: var(--g1); background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.2px); background-size: 20px 20px; background-position: 9px 9px; }
+  .pv svg { position: absolute; left: -1px; top: -1px; }
+  #pedge { position: absolute; top: 0; width: 2px; height: 640px; background: var(--red); box-shadow: 0 0 14px 2px rgba(208,25,25,.6); }
+  .seg { position: absolute; top: 0; width: 72px; height: 3px; background: var(--g3); }
+  .seg i { position: absolute; inset: 0; background: var(--red); transform-origin: 0 50%; display: block; }
+
+  /* 3D labels */
+  .l3 { position: absolute; left: 0; top: 0; }
+  .l3 .stem { position: absolute; left: 0; bottom: 0; width: 1px; height: 64px; background: rgba(255,255,255,.55); transform-origin: 50% 100%; }
+  .l3 .dot { position: absolute; left: -5px; bottom: -5px; width: 10px; height: 10px; border: 1.5px solid var(--red); box-sizing: border-box; background: var(--bg); }
+  .l3 .tx { position: absolute; left: 10px; bottom: 50px; font-size: 13px; color: #fff; }
+  .l3 .tx2 { position: absolute; left: 10px; bottom: 32px; font-size: 11px; color: var(--g5); }
+  .step { position: absolute; left: 0; font: 500 17px/1 'JBM', monospace; letter-spacing: .18em; text-transform: uppercase; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="grid" class="full"></div>
+    <canvas id="gl" width="1920" height="1080"></canvas>
+    <div id="s4" class="full"></div>
+    <div id="s1" class="full"></div>
+    <div id="s2" class="full"></div>
+    <div id="s3" class="full"></div>
+    <div id="s5" class="full"></div>
+    <div id="s6" class="full"></div>
+    <div id="s0" class="full"><div id="cursor"></div></div>
+    <div id="slash"></div>
+    <div id="hud" class="full"></div>
+  </div>
+  <div id="flash" class="full"></div>
+  <div id="vignette" class="full"></div>
+  <canvas id="grain" width="960" height="540"></canvas>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
