@@ -21,7 +21,9 @@ ffmpeg -y -loglevel error -i out/master.mov -i out/isofiniti-showreel-audio.wav 
   -map 0:v -map 1:a -af loudnorm=I=-14:TP=-1:LRA=11 -ar 48000 \
   -c:v libx264 -preset slow -crf 12 -pix_fmt yuv420p -profile:v high -tune film \
   -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
-  -c:a aac -b:a 320k -movflags +faststart -shortest out/isofiniti-showreel.mp4
+  -c:a aac -b:a 320k -movflags +faststart -shortest out/isofiniti-showreel-hq.mp4
+ffmpeg -y -loglevel error -i out/isofiniti-showreel-hq.mp4 -c:v libx264 -preset slower -crf 19 -pix_fmt yuv420p -profile:v high -tune film \
+  -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart out/isofiniti-showreel.mp4
 ffmpeg -y -loglevel error -i out/isofiniti-showreel-audio.wav -af loudnorm=I=-14:TP=-1:LRA=11 -ar 48000 -c:a aac -b:a 256k out/isofiniti-showreel-audio.m4a
 rm -f out/part*.mov out/parts.txt out/master.mov
 echo done

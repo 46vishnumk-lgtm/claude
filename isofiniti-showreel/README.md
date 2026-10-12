@@ -7,8 +7,10 @@ The animation is code. Each frame is a pure function of time, rendered frame-exa
 
 | File | Use |
 |---|---|
-| `isofiniti-showreel.mp4` | Delivery: H.264 High, CRF 12, BT.709, AAC 320k, −14 LUFS / −1 dBTP (web/social) |
-| `isofiniti-showreel-master.mov` | Master: ProRes 422 HQ 10-bit + 24-bit PCM (for editing/re-encoding) |
+| `isofiniti-showreel.mp4` | Web/social delivery (committed): H.264 High CRF 19, 1080p60, BT.709, AAC 320k, −14 LUFS / −1 dBTP (~28 MB) |
+| `isofiniti-showreel-hq.mp4` | Near-lossless H.264 CRF 12 (~123 MB, generated locally, not committed) |
+| `isofiniti-showreel-master.mov` | Master: ProRes 422 HQ 10-bit + 24-bit PCM (~870 MB, generated locally, not committed) |
+| `storyboard.png` | 12-frame contact sheet of the final render |
 | `isofiniti-showreel-audio.wav` | Soundtrack stem, 48 kHz / 24-bit |
 | `isofiniti-showreel-audio.m4a` | Soundtrack for the live HTML preview |
 
