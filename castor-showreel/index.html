@@ -507,6 +507,7 @@ em,.red{font-style:normal;color:var(--red)}
 <script>
 (() => {
 const RENDER = /[?&]render\b/.test(location.search);
+const REVIEW = !!document.getElementById('review');
 if (RENDER) document.documentElement.classList.add('render');
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -993,7 +994,7 @@ tl.to({}, { duration: .01 }, DURATION - .01);
 /* ---------- playback / render API ---------- */
 const stage = $('#stage');
 function fit() {
-  if (RENDER) return;
+  if (RENDER || REVIEW) return;
   const s = Math.min((innerWidth - 32) / 1920, (innerHeight - 96) / 1080);
   stage.style.transform = `scale(${s})`;
   stage.style.left = ((innerWidth - 1920 * s) / 2) + 'px';
@@ -1001,13 +1002,14 @@ function fit() {
 }
 addEventListener('resize', fit); fit();
 
-window.SHOWREEL = { duration: DURATION, fps: 60, seek(t) { tl.seek(t, false); tick(t); } };
+window.SHOWREEL = { duration: DURATION, fps: 60, scenes: SCENES, seek(t) { tl.seek(t, false); tick(t); } };
 tl.seek(0); tick(0);
 
 const ready = Promise.all([document.fonts.ready, ...$$('img').map(i => i.decode ? i.decode().catch(() => {}) : 0)]);
 ready.then(() => {
   window.SHOWREEL.ready = true;
-  if (RENDER) return;
+  window.dispatchEvent(new Event('showreel-ready'));
+  if (RENDER || REVIEW) return;
   const pp = $('#pp'), ic = $('#pp-ic'), scrub = $('#scrub'), tc = $('#tc');
   const PAUSE = 'M7 5h4v14H7zM13 5h4v14h-4z', PLAY = 'M8 5l11 7-11 7z';
   let playing = true, last = performance.now(), t = 0, dragging = false;

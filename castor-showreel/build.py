@@ -49,3 +49,19 @@ src = src.replace("{{ISO_S4}}", isofiniti("s4"))
 src = src.replace("{{ISO_END}}", isofiniti("end"))
 (ROOT / "index.html").write_text(src)
 print("wrote index.html", len(src), "bytes")
+
+# review.html — the same piece inside a scrub/notes review desk, shaped for publishing as an Artifact
+# (no document skeleton; Google Fonts + cdnjs instead of local font/script files).
+parts = (ROOT / "src" / "review.parts.html").read_text()
+part = lambda name: parts.split(f"<!--{name}-->")[1].split("<!--")[0] if name != "SCRIPT" else parts.split("<!--SCRIPT-->")[1]
+rv = src
+rv = re.sub(r"<!doctype html>\s*<html[^>]*>\s*<head>\s*<meta charset[^>]*>\s*<meta name=\"viewport\"[^>]*>\s*<title>[^<]*</title>", part("HEAD"), rv, count=1)
+rv = re.sub(r"@font-face\{[^}]*\}\n", "", rv)
+rv = rv.replace("</head>\n<body>\n", "")
+rv = rv.replace('<div id="stage">', part("TOP") + '<div id="stage">', 1)
+rv = re.sub(r'<div id="ui">.*?</div>\n', part("BOTTOM"), rv, count=1, flags=re.S)
+rv = rv.replace('<script src="vendor/gsap.min.js"></script>', '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>')
+rv = rv.replace("</body>\n</html>", part("SCRIPT"))
+assert "<html" not in rv and "<body" not in rv and 'id="ui"' not in rv and "<!--" not in rv.split("<style>")[0]
+(ROOT / "review.html").write_text(rv)
+print("wrote review.html", len(rv), "bytes")
