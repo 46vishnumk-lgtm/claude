@@ -132,6 +132,7 @@ body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px
   const chapBtns = [...chaps.children];
 
   const scrub = $('#rv-scrub'), timeEl = $('#rv-time'), sceneEl = $('#rv-scene'), atEl = $('#rv-at');
+  scrub.max = Math.round(DUR * 100);
   function render() {
     S.seek(t);
     scrub.value = Math.round(t * 100);

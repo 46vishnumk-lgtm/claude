@@ -36,9 +36,10 @@ def isofiniti(prefix):
     out = ['<svg class="iso-svg" viewBox="40 34 1228 292" fill="#0F0F11" xmlns="http://www.w3.org/2000/svg">']
     out.append(f'<defs><clipPath id="{prefix}-band"><rect x="100" y="100" width="1110" height="158"/></clipPath></defs>')
     out.append(f'<path class="iso-br iso-tl" d="{p[10]}"/><path class="iso-br iso-brr" d="{p[11]}"/>')
+    # The red stroke sits UNDER the N: in the supplied artwork the N's black diagonal crosses over it.
     out.append(f'<g clip-path="url(#{prefix}-band)">')
-    out += [f'<path class="iso-l" d="{p[i]}"/>' for i in letters]
     out.append(f'<path class="iso-n" fill="#D01919" d="{p[8]}"/>')
+    out += [f'<path class="iso-l" d="{p[i]}"/>' for i in letters]
     out.append("</g></svg>")
     return "".join(out)
 
