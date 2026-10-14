@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Castor Ecosystem Showreel</title>
+<style>
+@font-face{font-family:Geist;src:url(assets/fonts/Geist-Variable.woff2) format('woff2');font-weight:100 900;font-display:block}
+@font-face{font-family:'Geist Mono';src:url(assets/fonts/GeistMono-Variable.woff2) format('woff2');font-weight:100 900;font-display:block}
+:root{
+  --ink:#0B0F17;--navy:#0F203A;--muted:#566173;--soft:#8A93A3;--line:rgba(15,32,58,.11);
+  --red:#D41100;--teal:#198387;--teal-l:#E3F6F6;--cyan:#C6EFF2;
+  --page:#E8EDF1;--chrome:#0B0F17;--chrome-text:#C9D1DB;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#07090D;--chrome:#11151C;--chrome-text:#9AA3AF}}
+:root[data-theme="dark"]{--page:#07090D;--chrome:#11151C;--chrome-text:#9AA3AF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--page);font-family:Geist,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:#fff;transform-origin:0 0;border-radius:6px;box-shadow:0 30px 80px -30px rgba(0,0,0,.35)}
+.render #stage{border-radius:0;box-shadow:none}
+.abs{position:absolute}
+.scene{position:absolute;inset:0;visibility:hidden}
+svg{display:block}
+.ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* background */
+#bg{position:absolute;inset:0;background:#fff}
+#bg .cyan{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 30%,#EAFBFC 58%,#CDEFF2 82%,#B5E6EA 100%)}
+#bg .orb{position:absolute;border-radius:50%;filter:blur(90px)}
+#bg .o1{width:900px;height:620px;left:-200px;top:640px;background:#A9E8EE;opacity:.55}
+#bg .o2{width:800px;height:560px;left:1250px;top:700px;background:#9EE0E6;opacity:.5}
+#bg .o3{width:520px;height:420px;left:820px;top:-260px;background:#E9FBFC;opacity:.9}
+#bg .grid{position:absolute;inset:0;background-image:radial-gradient(rgba(15,32,58,.085) 1.1px,transparent 1.3px);background-size:32px 32px;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 55%,#000 80%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0%,#000 55%,#000 80%,transparent 100%)}
+#ambient,#flow{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none}
+#camera{position:absolute;inset:0;transform-origin:960px 540px}
+
+/* glass */
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.58));border:1px solid rgba(15,32,58,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 30px 60px -28px rgba(15,32,58,.28),0 6px 16px -8px rgba(15,32,58,.10);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border-radius:24px}
+.pill{display:inline-flex;align-items:center;gap:12px;height:52px;padding:0 24px 0 18px;border-radius:999px;font-size:20px;font-weight:500;color:var(--ink);white-space:nowrap}
+.pill svg{width:22px;height:22px;color:var(--teal)}
+
+/* type */
+.kicker{font-family:'Geist Mono',monospace;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px;white-space:nowrap}
+.kicker::before{content:"";width:8px;height:8px;background:var(--red);border-radius:2px}
+.center{left:0;right:0;text-align:center;justify-content:center}
+.h1{font-weight:640;letter-spacing:-.045em;line-height:.98;color:var(--ink)}
+em,.red{font-style:normal;color:var(--red)}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .02em .08em;margin-bottom:-.08em}
+.split .wi{display:inline-block;will-change:transform}
+.lead{font-size:26px;line-height:1.4;color:var(--muted);font-weight:400;letter-spacing:-.01em}
+
+/* HUD */
+#hud{position:absolute;inset:0;pointer-events:none;font-family:'Geist Mono',monospace;color:var(--muted)}
+#hud .tl{position:absolute;left:56px;top:44px;font-size:13px;letter-spacing:.22em;text-transform:uppercase;display:flex;gap:14px;align-items:center}
+#hud .tl b{font-weight:500;color:var(--ink)}
+#hud .tr{position:absolute;right:56px;top:40px;display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.22em;text-transform:uppercase}
+#hud .num{height:20px;overflow:hidden;font-size:15px;color:var(--ink);font-weight:500}
+#hud .num span{display:block;height:20px;line-height:20px}
+#hud .bar{position:absolute;left:56px;right:56px;bottom:38px;height:2px;background:rgba(15,32,58,.08);border-radius:2px}
+#hud .bar i{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(0)}
+#hud .ticks{position:absolute;left:56px;right:56px;bottom:46px;height:8px}
+#hud .ticks i{position:absolute;bottom:0;width:1px;height:6px;background:rgba(15,32,58,.25)}
+
+/* S1 */
+#s1-logo{left:780px;top:438px;width:360px}
+#s1-logo .castor-svg{width:100%;height:auto;overflow:visible}
+.chip-o{position:absolute;left:0;top:0}
+.chip{width:92px;height:92px;border-radius:28px;display:grid;place-items:center;color:var(--teal)}
+.chip svg{width:38px;height:38px}
+
+/* business cards */
+.biz{position:absolute;left:0;top:0}
+.biz-card{width:440px;height:196px;overflow:hidden;position:relative}
+.biz .bar{height:44px;display:flex;align-items:center;gap:7px;padding:0 18px;border-bottom:1px solid rgba(15,32,58,.07);overflow:hidden}
+.biz .bar i{width:10px;height:10px;border-radius:50%;background:#D7DCE3;flex:none}
+.biz .bar .url{margin-left:12px;flex:1;height:24px;border-radius:8px;background:rgba(15,32,58,.05);font-family:'Geist Mono',monospace;font-size:13px;color:var(--soft);display:flex;align-items:center;padding:0 12px;gap:8px}
+.biz-body{display:flex;align-items:center;gap:20px;padding:24px 24px}
+.biz .tile{width:60px;height:60px;border-radius:18px;background:linear-gradient(160deg,#ECFAFA,#D3F1F2);border:1px solid rgba(25,131,135,.18);display:grid;place-items:center;color:var(--teal);flex:none}
+.biz .tile svg{width:30px;height:30px}
+.biz-name{font-size:25px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.biz-sub{font-size:16px;color:var(--soft);margin-top:4px;white-space:nowrap}
+.biz-load{position:absolute;left:0;top:43px;height:2px;width:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(0)}
+.biz-dot{position:absolute;right:18px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--red);opacity:0;box-shadow:0 0 0 6px rgba(212,17,0,.12)}
+
+/* S2 */
+.brk{position:absolute;height:0;border-top:2px dashed rgba(15,32,58,.28)}
+.brk.v{width:0;height:auto;border-top:0;border-left:2px dashed rgba(15,32,58,.22)}
+.warn{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:700;font-size:22px;box-shadow:0 10px 24px -6px rgba(212,17,0,.55)}
+.warn::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(212,17,0,.35);transform:scale(var(--p,1));opacity:calc(1.6 - var(--p,1))}
+
+/* S3 */
+#s3-search{left:1040px;top:164px;width:640px;height:72px;border-radius:20px;display:flex;align-items:center;gap:16px;padding:0 24px;font-size:24px;color:var(--ink)}
+#s3-search svg{width:26px;height:26px;color:var(--muted)}
+#s3-search .caret{width:2px;height:28px;background:var(--red);margin-left:-12px}
+.ghost{position:absolute;left:0;top:0;width:420px;height:270px;border-radius:20px;overflow:hidden}
+.ghost .gb{height:36px;border-bottom:1px solid rgba(15,32,58,.07);display:flex;gap:6px;align-items:center;padding:0 14px}
+.ghost .gb i{width:8px;height:8px;border-radius:50%;background:#DCE0E6}
+.ghost .gb span{margin-left:10px;height:16px;width:180px;border-radius:6px;background:rgba(15,32,58,.06)}
+.sk{height:12px;border-radius:6px;background:rgba(15,32,58,.08);margin:14px 20px 0}
+.sk.b{height:70px;border-radius:12px;background:linear-gradient(120deg,rgba(25,131,135,.10),rgba(15,32,58,.05))}
+.frus{left:140px;display:flex;align-items:center;gap:16px;font-size:24px;color:var(--ink);font-weight:500}
+.frus .x{width:36px;height:36px;border-radius:12px;background:rgba(212,17,0,.08);color:var(--red);display:grid;place-items:center}
+.frus .x svg{width:18px;height:18px;stroke-width:2.4}
+.back{left:0;top:0;height:40px;padding:0 16px 0 12px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:17px;font-weight:500}
+.back svg{width:18px;height:18px}
+#cursor{position:absolute;left:0;top:0;width:34px;height:34px;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+#cursor .rip{position:absolute;left:-26px;top:-26px;width:52px;height:52px;border-radius:50%;border:2px solid var(--red);opacity:0}
+
+/* S4 */
+#s4-iso{left:610px;top:350px;width:700px}
+#s4-iso .iso-svg,#end-iso .iso-svg{width:100%;height:auto;overflow:visible}
+#redline{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
+#links{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
+
+/* S5 */
+#hub{left:960px;top:540px;width:600px;height:280px;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#hub img{width:132px}
+#hub .t{font-size:58px;font-weight:700;letter-spacing:-.035em;line-height:.98;text-align:center}
+#hub .m{font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+#halo{left:960px;top:540px;width:1100px;height:1100px;border-radius:50%;background:radial-gradient(closest-side,rgba(141,226,233,.75),rgba(141,226,233,.25) 45%,rgba(255,255,255,0) 72%)}
+#halo2{left:960px;top:540px;width:520px;height:520px;border-radius:50%;background:radial-gradient(closest-side,rgba(212,17,0,.10),rgba(212,17,0,0))}
+#rings{left:960px;top:540px;width:1300px;height:1300px}
+.plat{top:930px;display:flex;gap:18px}
+#s5-for{top:884px}
+
+/* S6 */
+.node{position:absolute;top:170px;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.node svg{width:32px;height:32px}
+.node .lbl{position:absolute;top:100px;left:50%;transform:translateX(-50%);font-size:19px;font-weight:500;color:var(--ink);white-space:nowrap}
+.node .ok{position:absolute;right:-4px;top:-4px;width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
+.node .ok svg{width:16px;height:16px;stroke-width:3}
+.node .ring{position:absolute;inset:-1px;border-radius:50%;border:2px solid var(--red);opacity:0}
+#pipe-track{position:absolute;left:400px;top:169px;width:1120px;height:2px;background:rgba(15,32,58,.10)}
+#pipe-fill{position:absolute;inset:0;background:var(--red);transform-origin:0 50%;transform:scaleX(0)}
+#board{left:520px;top:330px;width:880px;height:580px;border-radius:22px;background:#fff;border:1px solid rgba(15,32,58,.10);box-shadow:0 40px 80px -40px rgba(15,32,58,.35);overflow:visible}
+#board .lbl{position:absolute;left:0;top:-30px;font-family:'Geist Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:.1em}
+.cmp{position:absolute}
+.cmp-nav{left:22px;top:20px;width:836px;height:48px;border-radius:12px;background:#fff;border:1px solid rgba(15,32,58,.08);display:flex;align-items:center;gap:18px;padding:0 18px}
+.cmp-nav img{width:68px}
+.cmp-nav i{height:10px;width:70px;border-radius:5px;background:rgba(15,32,58,.10)}
+.cmp-nav b{margin-left:auto;height:28px;width:96px;border-radius:999px;background:#0E1B33}
+.cmp-hero{left:22px;top:84px;width:836px;height:270px;border-radius:18px;background:radial-gradient(60% 90% at 85% 50%,rgba(25,131,135,.5),transparent 60%),linear-gradient(135deg,#0E1B33,#13294C);overflow:hidden}
+.cmp-hero .l{position:absolute;left:34px;border-radius:8px;background:#fff}
+.cmp-hero .btn{position:absolute;left:34px;top:212px;width:130px;height:36px;border-radius:999px;background:var(--teal)}
+.cmp-tile{top:372px;width:197px;height:120px;border-radius:16px;background:linear-gradient(170deg,#EFFBFB,#E1F5F6);border:1px solid rgba(25,131,135,.14);color:var(--teal);padding:18px}
+.cmp-tile svg{width:28px;height:28px}
+.cmp-tile i{display:block;height:9px;width:110px;border-radius:5px;background:rgba(15,32,58,.14);margin-top:16px}
+.cmp-tile i+i{width:70px;margin-top:9px;background:rgba(15,32,58,.08)}
+.cmp-cta{left:22px;top:508px;width:836px;height:50px;border-radius:14px;background:#EAF7F7;display:flex;align-items:center;justify-content:center;gap:14px}
+.cmp-cta i{height:10px;width:220px;border-radius:5px;background:rgba(15,32,58,.15)}
+.cmp-cta b{height:28px;width:110px;border-radius:999px;background:#0E1B33}
+#sel{position:absolute;left:0;top:0;border:1.5px solid var(--red);pointer-events:none;opacity:0}
+#sel i{position:absolute;width:9px;height:9px;background:#fff;border:1.5px solid var(--red)}
+#sel i:nth-child(1){left:-5px;top:-5px}#sel i:nth-child(2){right:-5px;top:-5px}#sel i:nth-child(3){left:-5px;bottom:-5px}#sel i:nth-child(4){right:-5px;bottom:-5px}
+#sel span{position:absolute;left:-1px;bottom:100%;margin-bottom:6px;background:var(--red);color:#fff;font-family:'Geist Mono',monospace;font-size:11px;padding:3px 7px;border-radius:4px;white-space:nowrap}
+#mcur{position:absolute;left:0;top:0}
+#mcur svg{width:26px;height:26px}
+#mcur span{position:absolute;left:20px;top:20px;background:var(--red);color:#fff;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px 999px 999px 4px;white-space:nowrap}
+#layers{left:220px;top:330px;width:250px;height:420px;padding:20px}
+#layers h6,#code h6{font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.lyr{display:flex;align-items:center;gap:12px;height:42px;padding:0 12px;border-radius:10px;font-size:17px;color:var(--ink)}
+.lyr i{width:16px;height:12px;border:1.5px solid var(--soft);border-radius:3px}
+#code{left:1450px;top:330px;width:330px;height:340px;padding:20px;border-radius:22px;background:linear-gradient(180deg,rgba(14,27,51,.96),rgba(14,27,51,.9));box-shadow:0 30px 60px -30px rgba(15,32,58,.6)}
+#code h6{color:#8DA0BA}
+.cl{font-family:'Geist Mono',monospace;font-size:15px;line-height:30px;color:#C9D4E3;white-space:nowrap}
+.cl .k{color:#7FD3D6}.cl .s{color:#F7C89A}.cl .r{color:#FF8A7A}
+.test{left:1450px;display:flex;align-items:center;gap:12px;height:48px;padding:0 18px;border-radius:14px;font-size:18px;font-weight:500}
+.test .c{width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
+.test .c svg{width:14px;height:14px;stroke-width:3}
+.integ{top:960px;height:48px;font-size:18px}
+#scan{position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(180deg,rgba(25,131,135,0),rgba(25,131,135,.16),rgba(25,131,135,0));border-bottom:2px solid rgba(25,131,135,.5);opacity:0}
+
+/* browser + site */
+.browser{position:absolute;left:0;top:0;border-radius:20px;overflow:hidden;background:#fff;border:1px solid rgba(15,32,58,.12);
+  box-shadow:0 60px 120px -50px rgba(15,32,58,.5),0 20px 40px -20px rgba(15,32,58,.2)}
+.chrome{height:46px;display:flex;align-items:center;gap:8px;padding:0 18px;background:#F6F8FA;border-bottom:1px solid rgba(15,32,58,.08)}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#E0E4EA}
+.chrome .addr{margin:0 auto;height:28px;width:420px;border-radius:9px;background:#fff;border:1px solid rgba(15,32,58,.08);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;color:var(--muted)}
+.chrome .addr svg{width:14px;height:14px;color:var(--teal);stroke-width:2.2}
+.vp{position:absolute;left:0;right:0;top:46px;bottom:0;overflow:hidden}
+.page{position:absolute;left:0;top:0;width:1440px;transform-origin:0 0}
+.page img.shot{display:block;width:1440px}
+.hot{position:absolute;border-radius:999px}
+.hero-art{position:absolute;left:760px;top:182px;width:633px;height:700px;pointer-events:none}
+.ha-core{position:absolute;left:316px;top:350px;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2AB3B8,#198387);box-shadow:0 0 90px rgba(42,179,184,.55);display:grid;place-items:center;color:#fff}
+.ha-core svg{width:62px;height:62px;stroke-width:1.5}
+.ha-t{position:absolute;left:0;top:0;width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:28px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:#8FDDE0}
+.ha-t svg{width:44px;height:44px;stroke-width:1.4}
+.floatc{position:absolute;left:0;top:0}
+
+/* S8 */
+.imp{position:absolute;left:0;top:0;width:380px;height:330px;padding:34px 32px;border-radius:28px}
+.imp .ic{width:72px;height:72px;border-radius:22px;background:linear-gradient(160deg,#ECFAFA,#D3F1F2);border:1px solid rgba(25,131,135,.18);display:grid;place-items:center;color:var(--teal)}
+.imp .ic svg{width:36px;height:36px}
+.imp h3{font-size:31px;font-weight:620;letter-spacing:-.03em;margin-top:34px;line-height:1.08}
+.imp p{font-size:19px;line-height:1.45;color:var(--muted);margin-top:12px}
+.imp .n{position:absolute;right:28px;top:34px;font-family:'Geist Mono',monospace;font-size:14px;color:var(--soft);letter-spacing:.12em}
+.imp .rl{position:absolute;left:32px;right:32px;bottom:0;height:3px;background:var(--red);transform-origin:0 50%;border-radius:3px 3px 0 0}
+
+/* S9 */
+.panel{position:absolute;top:230px;width:810px;height:700px;border-radius:32px;padding:40px}
+.panel .tag{font-family:'Geist Mono',monospace;font-size:15px;letter-spacing:.24em;font-weight:500}
+.mini{position:absolute;width:300px;height:118px;border-radius:18px;background:#fff;border:1px solid rgba(15,32,58,.10);display:flex;align-items:center;gap:16px;padding:0 20px;box-shadow:0 14px 30px -18px rgba(15,32,58,.3)}
+.mini .tile{width:48px;height:48px;border-radius:14px;background:#EEF1F4;display:grid;place-items:center;color:#7B8494}
+.mini .tile svg{width:24px;height:24px}
+.mini b{font-size:20px;font-weight:600;letter-spacing:-.02em;color:#4A5262}
+.li{position:absolute;left:40px;display:flex;align-items:center;gap:16px;font-size:23px;font-weight:500}
+.li .m{width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+.li .m svg{width:17px;height:17px;stroke-width:2.8}
+.li.bad{color:#6B7383}.li.bad .m{background:#ECEEF1;color:#8C93A0}
+.li.good .m{background:var(--red);color:#fff}
+#after-br{left:40px;top:90px;width:730px;height:290px;border-radius:16px}
+#after-br .vp{top:34px}
+#after-br .chrome{height:34px;padding:0 14px}
+#after-br .chrome i{width:9px;height:9px}
+#after-br .chrome .addr{height:20px;width:260px;font-size:12px}
+
+/* S10 */
+#laptop{left:1415px;top:500px;width:900px}
+.lap-screen{position:relative;width:900px;height:566px;border-radius:26px 26px 6px 6px;background:#0D1117;padding:16px 16px 18px;box-shadow:0 60px 100px -50px rgba(15,32,58,.55)}
+.lap-screen .vp{position:absolute;left:16px;right:16px;top:16px;bottom:18px;border-radius:8px;overflow:hidden;background:#fff}
+.lap-base{width:1040px;height:26px;margin-left:-70px;border-radius:2px 2px 22px 22px;background:linear-gradient(180deg,#E6E9ED,#C4C9D0 70%,#A9AFB8);box-shadow:0 30px 40px -20px rgba(15,32,58,.4)}
+.lap-base::before{content:"";display:block;margin:0 auto;width:150px;height:9px;border-radius:0 0 10px 10px;background:#B7BDC6}
+#phone{left:1790px;top:655px;width:224px;height:462px;border-radius:40px;background:#0D1117;padding:10px;box-shadow:0 50px 80px -30px rgba(15,32,58,.6)}
+#phone .vp{position:absolute;inset:10px;border-radius:31px;overflow:hidden;background:#fff}
+#phone .isl{position:absolute;left:50%;top:18px;width:70px;height:20px;margin-left:-35px;border-radius:12px;background:#0D1117;z-index:2}
+.badge{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 20px 0 14px;border-radius:999px;font-size:19px;font-weight:600}
+.badge .d{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.badge .d svg{width:14px;height:14px;stroke-width:3}
+#end-iso{left:560px;top:380px;width:800px}
+#end-line{position:absolute;left:560px;top:600px;width:800px;height:2px;background:var(--red);transform-origin:50% 50%;transform:scaleX(0)}
+
+/* player */
+#ui{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:999px;background:var(--chrome);color:var(--chrome-text);font:500 13px 'Geist Mono',monospace;z-index:10;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:.92;max-width:calc(100vw - 32px)}
+#ui button{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+#ui button svg{width:16px;height:16px}
+#ui input{width:min(420px,48vw);accent-color:#D41100}
+.render #ui{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"><div class="orb o3"></div><div class="cyan"></div><div class="orb o1"></div><div class="orb o2"></div><div class="grid"></div></div>
+  <canvas id="ambient" width="1920" height="1080"></canvas>
+
+  <div id="camera">
+    <svg id="links" viewBox="0 0 1920 1080"></svg>
+    <canvas id="flow" width="1920" height="1080"></canvas>
+
+    <!-- 01 OPENING -->
+    <section class="scene" id="s1">
+      <div class="abs" id="s1-logo"><svg class="castor-svg" viewBox="0 0 1994 1126" fill="#0F203A" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="s1-swclip"><rect class="sw-rect" x="0" y="0" width="0" height="1126"/></clipPath></defs><g class="c-sw" clip-path="url(#s1-swclip)"><path d="M834.356 1.0461L834.995 0.999319C863.699 -0.964486 903.662 0.418506 933.091 1.31882C1108.82 6.69789 1284.64 39.6319 1450.12 99.0641C1458.14 101.945 1513.41 123.222 1515.89 125.388C1512.67 128.174 1504.21 123.554 1499.27 122.131C1456.85 109.917 1409.96 98.3623 1366.69 90.1739C1322.49 81.1936 1277.79 77.3527 1233.17 72.6046C1187.4 67.7322 1146.34 65.5299 1100.18 66.0308C1052.83 66.5455 1005.6 63.9175 958.526 72.187C946.418 74.314 930.445 72.4506 918.033 74.9724C882.946 80.1586 846.84 84.8416 812.012 91.4428C760.996 101.404 710.566 114.164 660.95 129.665C482.878 186.732 242.614 300.076 153.51 473.457C132.408 508.297 116.439 571.482 115.937 613.175C114.705 715.443 170.844 823.181 249.783 887.271C256.255 892.526 266.036 898.464 271.475 904.187L269.932 904.561C263.955 902.235 252.838 894.39 247.14 890.626C212.015 867.752 179.006 841.783 148.502 813.032C64.1974 734.121 1.73733 631.534 0.0295852 514.054C-1.26976 424.695 40.3482 323.886 101.618 259.853C279.583 73.8689 586.417 7.75682 834.356 1.0461Z"/><path d="M623.75 1054.22C640.397 1055.73 655.455 1059.11 671.844 1061.37C993.418 1105.88 1342.1 1084.66 1628.81 919.175C1764.85 840.651 1909.62 728.343 1930.11 560.658C1936.17 511.058 1924.02 446.07 1904.81 399.482C1902.63 394.188 1887.95 372.553 1890.2 369.162C1894.82 371.128 1903.61 382.286 1906.9 386.48C1930.48 416.51 1952.44 448.27 1966.12 484.177C2035.27 644.759 1968.74 805.457 1842.5 913.935C1831.15 923.688 1818.58 933.211 1806.6 942.298C1791.25 953.533 1775.95 966.69 1759.01 975.396C1739.08 985.642 1720.6 998.736 1700.47 1008.25C1550.03 1079.41 1384.24 1113.16 1218.61 1120.41C1201.05 1121.19 1182.67 1124.53 1164.97 1125.05C1087.41 1129.22 1010.81 1118.44 933.433 1116.1C923.176 1115.15 913.025 1113.23 902.808 1111.93C892.828 1110.66 882.57 1110.22 872.649 1108.56C823.486 1100.39 773.813 1094.14 725.032 1083.85C704.782 1079.58 684.562 1075.18 664.371 1070.65C655.106 1068.48 635.79 1062.97 627.273 1062.16C625.701 1060.74 624.732 1059.72 623.329 1058.19L623.75 1054.22Z"/><path d="M627.029 1062.14C620.024 1061.93 615.909 1059.34 609.284 1057.01C593.891 1051.61 573.546 1048.65 558.618 1043.51C564.691 1038.8 581.728 1046.74 587.734 1047.69C601.4 1049.81 610.509 1048.3 623.506 1054.2L623.086 1058.17C624.489 1059.7 625.457 1060.73 627.029 1062.14Z"/></g><path class="c-l c-C" d="M465.157 380.847C491.672 377.735 555.67 385.875 567.073 416.461C572.386 430.708 569.906 454.066 563.594 468.015C541.992 462.134 529.872 448.323 510.071 442.109C491.896 436.406 463.686 437.934 446.56 446.841C425.64 456.62 414.199 476.547 407.941 498.465C393.723 548.472 394.593 641.747 455.98 660.194C488.851 670.072 521.572 660.614 549.185 642.507C554.186 639.228 560.396 636.351 566.256 638.454C571.651 649.477 572.277 685.459 563.371 695.193C551.562 708.102 516.416 719.337 499.101 720.855C457.317 724.518 415.602 722.653 381.434 695.464C342.754 664.701 331.302 626.759 326.897 579.532C322.27 529.917 332.567 468.585 365.195 429.487C393.344 395.757 423.396 385.229 465.157 380.847Z"/><path class="c-l c-a" d="M697.407 465.36C707.288 464.648 715.895 465.108 725.619 465.518C823.978 469.644 808.184 549.862 809.148 620.976C809.548 650.488 810.683 683.933 808.308 713.154C804.941 715.522 801.506 717.713 798.049 719.949C772.562 721.283 750.311 727.09 754.755 692.851C729.915 713.694 712.842 724.068 678.522 722.723C650.123 721.608 634.299 717.244 614.702 696.521C603.161 684.325 599.85 664.939 599.896 648.722C600.118 569.189 686.639 569.499 744.925 570.834C744.525 558.188 744.6 540.368 737.689 529.676C725.103 510.207 684.193 516.61 664.659 521.991C654.852 523.83 629.939 539.183 621.066 537.054C607.564 533.813 613.906 498.569 616.813 490.868C635.29 474.652 673.565 466.91 697.407 465.36ZM706.393 674.96C746.549 663.62 745.32 647.311 744.319 612.29C730.547 612.205 716.776 612.262 703.006 612.46C690.273 614.135 678.75 617.268 670.589 627.813C660.874 640.366 662.863 661.006 676.05 670.322C683.764 675.771 695.56 676.984 704.584 675.322C705.189 675.21 705.792 675.089 706.393 674.96Z"/><path class="c-l c-s" d="M944.606 465.365C963.344 463.277 995.89 467.871 1011.85 478.067C1022.31 484.759 1023.59 517.127 1016.97 525.429C1009.92 534.284 985.166 515.561 976.143 514.492C969.086 513.232 961.634 510.428 953.594 511.755C939.52 510.943 920.329 518.642 921.544 535.829C923.06 557.279 964.038 567.101 980.603 574.466C1012.32 588.267 1034.22 605.825 1033.06 643.348C1031.21 703.485 989.228 720.522 936.468 722.79C910.259 722.93 853.458 719.659 858.404 681.552C859.463 673.399 857.736 665.77 860.833 657.543C865.043 654.106 875.914 657.216 880.582 660.021C900.03 671.707 947.026 684.039 964.092 663.952C990.072 633.371 926.099 616.89 907.55 608.813C885.795 599.338 864.128 583.813 861.122 557.702C851.903 496.378 890.357 469.162 944.606 465.365Z"/><path class="c-l c-t" d="M1110.27 409.186C1168.96 402.103 1157.17 425.32 1156.51 470.453L1211.99 470.709C1222.32 494.761 1220.87 534.889 1187.06 526.05C1180.71 524.391 1165.43 525.416 1156.73 524.101C1156.77 547.427 1153.29 641.37 1161.78 656.38C1174.23 678.371 1194.1 658.595 1210.48 662.879C1219.96 668.73 1217.69 699.778 1213.98 708.434C1200.58 721.286 1187.7 721.682 1169.78 721.679C1148.11 721.8 1125.65 721.066 1109.74 703.962C1088.87 681.539 1091.51 643.402 1091.43 615.153C1091.25 585.343 1091.56 555.532 1092.41 525.733C1081.95 525.893 1057.18 528.804 1055.25 514.728C1053.9 504.871 1052.49 482.157 1057.89 473.911C1066.07 469.246 1082.86 470.572 1093.09 470.483C1090.98 453.435 1091.44 429.804 1093.23 412.722C1098.43 411.411 1104.91 410.277 1110.27 409.186Z"/><path class="c-l c-o" d="M1363.45 465.354C1393.27 461.852 1435.19 470.771 1457.86 491.308C1504.85 533.892 1504.42 638.531 1463.37 685.414C1440.61 711.411 1412.32 720.48 1379.12 722.308C1306.66 728.41 1254.76 696.306 1249.3 620.122C1243.16 534.678 1270.31 472.512 1363.45 465.354ZM1383.64 668.864C1427.91 659.342 1430.51 597.618 1422.49 561.98C1414.71 527.458 1394 515.803 1360.2 518.747C1315.02 526.149 1311.62 583.949 1317.28 619.977C1323.45 659.263 1345.94 673.886 1383.64 668.864Z"/><path class="c-l c-r" d="M1657.64 465.322C1664.13 465.402 1682.34 466.752 1685.11 471.488C1690.79 481.196 1687.38 522.159 1686.39 532.52C1666.41 530.519 1654.98 520.833 1634.42 533.785C1625.72 539.035 1610.08 557.299 1608.84 567.604C1603.37 612.928 1609.58 661.787 1606.71 707.329C1605.56 725.657 1562.93 720.607 1551.16 717.74C1549.2 716.744 1545.43 715.213 1544.29 713.296C1541.85 709.21 1542.42 510.507 1543.17 490.229C1543.4 484.35 1544.05 478.567 1545.41 472.836C1553.35 467.219 1584.2 468.37 1592.98 473.326C1602.77 478.848 1595.28 493.491 1596.64 500.941C1603.9 501.577 1615.29 485.13 1619.5 480.089C1629.11 468.579 1643.5 466.291 1657.64 465.322Z"/><g class="c-star"><path d="M1720.69 47.7554C1725.32 47.833 1731.59 47.0252 1734.51 50.0057C1735.45 61.9893 1739.66 77.2103 1741.73 89.3719C1746.18 115.691 1752.06 142.438 1756.44 168.689C1765.42 161.548 1806.09 128.424 1813.87 126.022L1815.05 127.214C1813.28 141.074 1778.36 178.761 1778.7 192.543C1796.05 196.274 1920.1 213.977 1925.43 217.845L1925.27 219.009C1909.18 223.012 1889.29 223.877 1872.6 228.248C1864.3 230.416 1851.33 229.446 1842.71 231.432C1818.75 235.222 1793.04 239.642 1768.7 240.074C1777.77 259.892 1797 278.4 1808.38 297.058L1802.79 301.366C1799.69 298.327 1761.82 268.976 1757.92 266.907C1747.04 274.933 1736.2 405.302 1727.47 414.604L1726.04 413.832C1720.85 401.955 1705.66 282.748 1704.32 263.451C1695.79 268.093 1685.82 275.709 1677.59 281.407C1662.95 291.346 1648.37 301.384 1633.86 311.524L1632.82 310.876C1634.06 304.876 1677.46 245.878 1684.23 238.255C1666.35 234.534 1524.74 218.727 1522.87 217.039C1532.37 209.101 1661.45 196.078 1682.07 194.471C1675.82 186.391 1634.33 130.429 1633.31 125.056C1637.23 122.002 1693.23 173.685 1702.74 173.787C1705.74 169.773 1718.65 62.0612 1720.69 47.7554Z"/><path d="M1727.04 13.4541C1732.69 27.3388 1733.08 34.9704 1734.76 49.9631C1731.84 46.9826 1725.58 47.7904 1720.94 47.7129C1722.54 38.0627 1724.63 22.5326 1727.04 13.4541Z"/><path d="M1808.64 297.039C1812.87 304.585 1816.68 311.243 1820.19 319.162C1817.19 315.833 1804.73 303.991 1803.06 301.347L1808.64 297.039Z"/></g></svg></div>
+      <div class="abs kicker center" id="s1-k" style="top:338px">Case Study · Healthcare Platform</div>
+      <h1 class="abs h1 center split" id="s1-title" style="top:384px;font-size:96px">Transforming Healthcare<br>Through <em>One Digital Ecosystem</em></h1>
+      <p class="abs lead center" id="s1-sub" style="top:600px;color:var(--ink);font-weight:500">Castor Home Health Solutions</p>
+      <div class="abs center" id="s1-tags" style="top:660px;display:flex;gap:16px">
+        <span class="pill glass"><svg class="ico" data-i="heart"></svg>Healthcare</span>
+        <span class="pill glass"><svg class="ico" data-i="cart"></svg>Commerce</span>
+        <span class="pill glass"><svg class="ico" data-i="users"></svg>Referrals</span>
+      </div>
+      <div class="chip-o" id="ch1"><div class="chip glass" data-bob="9,.32,0"><svg class="ico" data-i="home"></svg></div></div>
+      <div class="chip-o" id="ch2"><div class="chip glass" data-bob="11,.27,1.4"><svg class="ico" data-i="truck"></svg></div></div>
+      <div class="chip-o" id="ch3"><div class="chip glass" data-bob="10,.3,2.6"><svg class="ico" data-i="inst"></svg></div></div>
+      <div class="chip-o" id="ch4"><div class="chip glass" data-bob="12,.25,3.8"><svg class="ico" data-i="pill"></svg></div></div>
+      <div class="chip-o" id="ch5"><div class="chip glass" data-bob="8,.35,5"><svg class="ico" data-i="heart"></svg></div></div>
+      <div class="chip-o" id="ch6"><div class="chip glass" data-bob="10,.29,.7"><svg class="ico" data-i="steth"></svg></div></div>
+    </section>
+
+    <!-- 02 CHALLENGE -->
+    <section class="scene" id="s2">
+      <div class="abs kicker center" id="s2-k" style="top:118px">02 — The Challenge</div>
+      <h2 class="abs h1 center split" id="s2-title" style="top:156px;font-size:80px">One brand. <em>Multiple websites.</em></h2>
+      <div class="brk" style="left:790px;top:470px;width:150px"></div><div class="brk" style="left:980px;top:470px;width:150px"></div>
+      <div class="brk" style="left:790px;top:790px;width:150px"></div><div class="brk" style="left:980px;top:790px;width:150px"></div>
+      <div class="brk v" style="left:559px;top:580px;height:38px"></div><div class="brk v" style="left:559px;top:642px;height:38px"></div>
+      <div class="brk v" style="left:1359px;top:580px;height:38px"></div><div class="brk v" style="left:1359px;top:642px;height:38px"></div>
+      <div class="warn" style="left:960px;top:470px">!</div>
+      <div class="warn" style="left:960px;top:790px">!</div>
+      <p class="abs lead center" id="s2-sub" style="top:950px">Multiple websites created a <span style="color:var(--ink);font-weight:500">fragmented digital experience.</span></p>
+    </section>
+
+    <!-- 03 FRUSTRATION -->
+    <section class="scene" id="s3">
+      <div class="ghost glass" id="g1"><div data-bob="0,0,1" data-shake="1"></div></div>
+      <div class="abs kicker" id="s3-k" style="left:140px;top:282px">03 — Customer Frustration</div>
+      <h2 class="abs h1 split" id="s3-title" style="left:140px;top:326px;font-size:80px;width:760px">Finding the right<br>service <em>wasn’t simple.</em></h2>
+      <div class="abs frus" style="top:560px"><span class="x"><svg class="ico" data-i="x"></svg></span>Multiple tabs</div>
+      <div class="abs frus" style="top:616px"><span class="x"><svg class="ico" data-i="x"></svg></span>Confusing navigation</div>
+      <div class="abs frus" style="top:672px"><span class="x"><svg class="ico" data-i="x"></svg></span>Time-consuming search</div>
+      <div class="abs glass" id="s3-search"><svg class="ico" data-i="search"></svg><span id="typed"></span><span class="caret"></span></div>
+    </section>
+
+    <!-- 04 ISOFINITI -->
+    <section class="scene" id="s4">
+      <svg id="redline" viewBox="0 0 1920 1080"><defs><filter id="rlglow" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="6"/></filter></defs>
+        <path id="rl-glow" d="M-40 578 C 420 578 600 556 960 556 S 1500 578 1960 578" fill="none" stroke="#D41100" stroke-width="8" opacity=".35" filter="url(#rlglow)" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+        <path id="rl" d="M-40 578 C 420 578 600 556 960 556 S 1500 578 1960 578" fill="none" stroke="#D41100" stroke-width="2.5" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+      </svg>
+      <div class="abs" id="s4-iso"><svg class="iso-svg" viewBox="40 34 1228 292" fill="#0F0F11" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="s4-band"><rect x="100" y="100" width="1110" height="158"/></clipPath></defs><path class="iso-br iso-tl" d="M146.52 69.2H75.2V140.52H49V43H146.52V69.2Z"/><path class="iso-br iso-brr" d="M1258.52 219.11V316.63H1161V290.43H1232.32V219.11H1258.52Z"/><g clip-path="url(#s4-band)"><path class="iso-l" d="M120.141 247.281V112.761H147.311V247.281H120.141Z"/><path class="iso-l" d="M252.516 248.8C243.143 248.8 234.403 247.344 226.296 244.43C218.316 241.517 211.603 236.894 206.156 230.56C200.836 224.227 197.479 216.057 196.086 206.05H223.826C224.966 210.357 227.056 213.84 230.096 216.5C233.136 219.034 236.746 220.87 240.926 222.01C245.233 223.15 249.729 223.72 254.416 223.72C257.963 223.72 261.446 223.277 264.866 222.39C268.286 221.504 271.073 219.984 273.226 217.83C275.506 215.677 276.646 212.764 276.646 209.09C276.646 206.304 276.013 204.024 274.746 202.25C273.606 200.477 271.896 199.084 269.616 198.07C267.463 196.93 264.803 195.917 261.636 195.03C258.976 194.27 256.189 193.637 253.276 193.13C250.489 192.624 247.703 191.99 244.916 191.23C242.256 190.47 239.659 189.584 237.126 188.57C232.313 187.304 227.689 185.784 223.256 184.01C218.823 182.11 214.896 179.767 211.476 176.98C208.056 174.067 205.333 170.457 203.306 166.15C201.406 161.844 200.456 156.65 200.456 150.57C200.456 143.984 201.533 138.41 203.686 133.85C205.966 129.29 208.943 125.554 212.616 122.64C216.416 119.6 220.596 117.257 225.156 115.61C229.843 113.964 234.529 112.824 239.216 112.19C243.903 111.557 248.336 111.24 252.516 111.24C261.256 111.24 269.109 112.76 276.076 115.8C283.043 118.84 288.743 123.4 293.176 129.48C297.609 135.56 300.143 143.224 300.776 152.47H274.366C273.859 148.67 272.466 145.567 270.186 143.16C267.906 140.754 264.993 138.98 261.446 137.84C258.026 136.7 254.163 136.13 249.856 136.13C247.069 136.13 244.346 136.384 241.686 136.89C239.026 137.397 236.619 138.22 234.466 139.36C232.439 140.374 230.793 141.767 229.526 143.54C228.386 145.314 227.816 147.467 227.816 150C227.816 152.534 228.513 154.75 229.906 156.65C231.299 158.424 233.326 160.007 235.986 161.4C238.773 162.667 242.003 163.87 245.676 165.01C249.476 166.277 253.466 167.29 257.646 168.05C261.826 168.81 265.816 169.824 269.616 171.09C274.429 172.357 278.926 173.877 283.106 175.65C287.286 177.297 290.959 179.45 294.126 182.11C297.293 184.644 299.763 187.937 301.536 191.99C303.309 195.917 304.196 200.794 304.196 206.62C304.196 214.347 302.739 220.934 299.826 226.38C297.039 231.7 293.176 236.007 288.236 239.3C283.423 242.594 277.913 245 271.706 246.52C265.499 248.04 259.103 248.8 252.516 248.8Z"/><path class="iso-l" d="M414.14 248.8C400.333 248.8 388.427 245.887 378.42 240.06C368.54 234.234 360.94 226.19 355.62 215.93C350.427 205.544 347.83 193.637 347.83 180.21C347.83 166.53 350.49 154.497 355.81 144.11C361.257 133.724 368.983 125.68 378.99 119.98C388.997 114.154 400.903 111.24 414.71 111.24C428.39 111.24 440.17 114.09 450.05 119.79C459.93 125.49 467.53 133.47 472.85 143.73C478.297 153.99 481.02 165.96 481.02 179.64C481.02 193.067 478.297 205.037 472.85 215.55C467.53 225.937 459.867 234.107 449.86 240.06C439.98 245.887 428.073 248.8 414.14 248.8ZM414.52 223.34C423.64 223.34 431.05 221.25 436.75 217.07C442.45 212.89 446.567 207.507 449.1 200.92C451.76 194.334 453.09 187.43 453.09 180.21C453.09 174.89 452.33 169.634 450.81 164.44C449.417 159.247 447.2 154.56 444.16 150.38C441.12 146.2 437.13 142.907 432.19 140.5C427.25 137.967 421.297 136.7 414.33 136.7C405.337 136.7 397.99 138.79 392.29 142.97C386.59 147.024 382.347 152.344 379.56 158.93C376.9 165.517 375.57 172.547 375.57 180.02C375.57 187.494 376.9 194.524 379.56 201.11C382.347 207.697 386.59 213.08 392.29 217.26C398.117 221.314 405.527 223.34 414.52 223.34Z"/><path class="iso-l" d="M528.176 247.281V112.761H623.936V138.031H555.346V172.801H613.296V197.881H555.346V247.281H528.176Z"/><path class="iso-l" d="M668.828 247.281V112.761H695.998V247.281H668.828Z"/><path class="iso-l" d="M864.491 245.2L771.151 151.86V245.2H744.891V113.94H771.151L864.491 207.28V113.94H890.741V245.2H864.491Z"/><path class="iso-l" d="M939.891 247.281V112.761H967.061V247.281H939.891Z"/><path class="iso-l" d="M1050.04 247.281V138.031H1009V112.761H1118.63V138.031H1077.4V247.281H1050.04Z"/><path class="iso-l" d="M1160.52 247.281V112.761H1187.69V247.281H1160.52Z"/><path class="iso-n" fill="#D01919" d="M771.15 245.201H744.9V233.531L864.5 113.931H890.75V125.601L771.15 245.201Z"/></g></svg></div>
+      <h2 class="abs h1 center split" id="s4-title" style="top:610px;font-size:64px">Isofiniti <em>unified</em> the experience.</h2>
+    </section>
+
+    <!-- 05 ECOSYSTEM -->
+    <section class="scene" id="s5">
+      <div class="abs" id="halo"></div><div class="abs" id="halo2"></div>
+      <svg class="abs" id="rings" viewBox="-650 -650 1300 1300">
+        <g id="ring1"><circle r="300" fill="none" stroke="rgba(15,32,58,.12)" stroke-width="1.2" stroke-dasharray="2 10"/></g>
+        <g id="ring2"><circle r="420" fill="none" stroke="rgba(15,32,58,.09)" stroke-width="1"/><circle cx="420" r="5" fill="#D41100"/><circle cx="-420" r="3.5" fill="#198387"/></g>
+        <g id="ring3"><circle r="560" fill="none" stroke="rgba(15,32,58,.07)" stroke-width="1" stroke-dasharray="1 14"/><circle cy="560" r="4" fill="#198387"/></g>
+      </svg>
+      <div class="abs glass" id="hub">
+        <img src="assets/logos/castor-navy.svg" alt="Castor">
+        <div class="t">ONE DIGITAL<br>ECOSYSTEM</div>
+        <div class="m">Healthcare · Commerce · Referrals</div>
+      </div>
+      <div class="abs kicker center" id="s5-for">One platform for</div>
+      <div class="abs plat center" id="s5-plat">
+        <span class="pill glass"><svg class="ico" data-i="search"></svg>Service Discovery</span>
+        <span class="pill glass"><svg class="ico" data-i="users"></svg>Referrals</span>
+        <span class="pill glass"><svg class="ico" data-i="cart"></svg>Commerce</span>
+        <span class="pill glass"><svg class="ico" data-i="bolt"></svg>Future Automation</span>
+      </div>
+    </section>
+
+    <!-- 06 BUILDING -->
+    <section class="scene" id="s6">
+      <div class="abs kicker center" id="s6-k" style="top:56px">06 — Building the Platform</div>
+      <div id="pipe-track"><div id="pipe-fill"></div></div>
+      <div class="node glass" style="left:400px"><svg class="ico" data-i="pen"></svg><span class="ring"></span><span class="ok"><svg class="ico" data-i="check"></svg></span><span class="lbl">Design</span></div>
+      <div class="node glass" style="left:680px"><svg class="ico" data-i="code"></svg><span class="ring"></span><span class="ok"><svg class="ico" data-i="check"></svg></span><span class="lbl">Development</span></div>
+      <div class="node glass" style="left:960px"><svg class="ico" data-i="link"></svg><span class="ring"></span><span class="ok"><svg class="ico" data-i="check"></svg></span><span class="lbl">Integration</span></div>
+      <div class="node glass" style="left:1240px"><svg class="ico" data-i="shield"></svg><span class="ring"></span><span class="ok"><svg class="ico" data-i="check"></svg></span><span class="lbl">Testing</span></div>
+      <div class="node glass" style="left:1520px"><svg class="ico" data-i="rocket"></svg><span class="ring"></span><span class="ok"><svg class="ico" data-i="check"></svg></span><span class="lbl">Launch</span></div>
+
+      <div class="abs glass" id="layers"><h6>Layers</h6>
+        <div class="lyr"><i></i>Navigation</div><div class="lyr"><i></i>Hero</div><div class="lyr"><i></i>Services</div><div class="lyr"><i></i>Referral CTA</div><div class="lyr"><i></i>Footer</div>
+      </div>
+      <div class="abs" id="board">
+        <span class="lbl">castor / home — 1440</span>
+        <div class="cmp cmp-nav"><img src="assets/logos/castor-navy.svg" alt=""><i></i><i></i><i></i><i style="width:90px"></i><i></i><b></b></div>
+        <div class="cmp cmp-hero">
+          <span class="l" style="top:40px;width:120px;height:20px;background:rgba(255,255,255,.18);border-radius:999px"></span>
+          <span class="l" style="top:78px;width:340px;height:26px"></span>
+          <span class="l" style="top:114px;width:290px;height:26px"></span>
+          <span class="l" style="top:150px;width:320px;height:26px;background:#2AB3B8"></span>
+          <span class="btn"></span>
+          <span class="abs" style="left:620px;top:135px;width:96px;height:96px;margin:-48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2AB3B8,#198387);box-shadow:0 0 60px rgba(42,179,184,.6)"></span>
+        </div>
+        <div class="cmp cmp-tile" style="left:22px"><svg class="ico" data-i="home"></svg><i></i><i></i></div>
+        <div class="cmp cmp-tile" style="left:235px"><svg class="ico" data-i="truck"></svg><i></i><i></i></div>
+        <div class="cmp cmp-tile" style="left:448px"><svg class="ico" data-i="inst"></svg><i></i><i></i></div>
+        <div class="cmp cmp-tile" style="left:661px"><svg class="ico" data-i="pill"></svg><i></i><i></i></div>
+        <div class="cmp cmp-cta"><i></i><b></b></div>
+        <div id="scan"></div>
+        <div id="sel"><i></i><i></i><i></i><i></i><span>Hero / 836 × 270</span></div>
+        <div id="mcur"><svg viewBox="0 0 24 24"><path d="M4 2.5l15 8-6.6 1.7L9.6 19z" fill="#D41100" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg><span>Isofiniti</span></div>
+      </div>
+      <div class="abs" id="code"><h6>components / Services.tsx</h6>
+        <div class="cl"><span class="k">export</span> <span class="k">function</span> Services() {</div>
+        <div class="cl">&nbsp;&nbsp;<span class="k">const</span> s = useServices()</div>
+        <div class="cl">&nbsp;&nbsp;<span class="k">return</span> &lt;Grid&gt;</div>
+        <div class="cl">&nbsp;&nbsp;&nbsp;&nbsp;{s.map(<span class="r">Card</span>)}</div>
+        <div class="cl">&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="r">Referral</span> to=<span class="s">"intake"</span>/&gt;</div>
+        <div class="cl">&nbsp;&nbsp;&lt;/Grid&gt;</div>
+        <div class="cl">}</div>
+      </div>
+      <div class="abs glass test" style="top:700px"><span class="c"><svg class="ico" data-i="check"></svg></span>Responsive</div>
+      <div class="abs glass test" style="top:762px"><span class="c"><svg class="ico" data-i="check"></svg></span>Accessible</div>
+      <div class="abs glass test" style="top:824px"><span class="c"><svg class="ico" data-i="check"></svg></span>Performance</div>
+      <div class="abs pill glass integ" style="left:620px"><svg class="ico" data-i="users"></svg>Referrals</div>
+      <div class="abs pill glass integ" style="left:830px"><svg class="ico" data-i="cart"></svg>Commerce</div>
+      <div class="abs pill glass integ" style="left:1050px"><svg class="ico" data-i="layers"></svg>Content</div>
+    </section>
+
+    <!-- 07 WEBSITE -->
+    <section class="scene" id="s7">
+      <div class="abs kicker center" id="s7-k" style="top:52px"><span>07 — Website Reveal</span></div>
+      <h2 class="abs h1 center split" id="s7-title" style="top:88px;font-size:66px">The new Castor experience is <em>live.</em></h2>
+      <div class="browser" id="br">
+        <div class="chrome"><i></i><i></i><i></i><div class="addr"><svg class="ico" data-i="lock"></svg>castorcares.com</div><span style="width:52px"></span></div>
+        <div class="vp"><div class="page" id="br-page">
+          <img class="shot" src="assets/img/castor-desktop.jpg" alt="">
+          <div class="hero-art">
+            <div class="ha-t" style="left:316px;top:150px"><div data-bob="6,.4,0"><svg class="ico" data-i="home"></svg></div></div>
+            <div class="ha-t" style="left:506px;top:288px"><div data-bob="6,.36,1"><svg class="ico" data-i="truck"></svg></div></div>
+            <div class="ha-t" style="left:434px;top:520px"><div data-bob="6,.42,2"><svg class="ico" data-i="inst"></svg></div></div>
+            <div class="ha-t" style="left:198px;top:520px"><div data-bob="6,.38,3"><svg class="ico" data-i="pill"></svg></div></div>
+            <div class="ha-t" style="left:126px;top:288px"><div data-bob="6,.33,4"><svg class="ico" data-i="users"></svg></div></div>
+            <div class="ha-core"><svg class="ico" data-i="heart"></svg></div>
+          </div>
+          <div class="hot" id="hot" style="left:112px;top:766px;width:166px;height:58px"></div>
+        </div></div>
+      </div>
+      <div class="floatc" id="f1"><div class="pill glass" data-bob="8,.3,0"><svg class="ico" data-i="search"></svg>Find the Right Care</div></div>
+      <div class="floatc" id="f2"><div class="pill glass" data-bob="9,.27,1.5"><svg class="ico" data-i="users"></svg>Submit a Referral</div></div>
+      <div class="floatc" id="f3"><div class="pill glass" data-bob="8,.33,3"><svg class="ico" data-i="cart"></svg>Medical Supplies</div></div>
+      <div class="floatc" id="f4"><div class="pill glass" data-bob="10,.25,4.2"><span style="width:10px;height:10px;border-radius:50%;background:#198387;box-shadow:0 0 0 5px rgba(25,131,135,.15);margin:0 4px"></span>24/7 Service Available</div></div>
+    </section>
+
+    <!-- 08 IMPACT -->
+    <section class="scene" id="s8">
+      <div class="abs kicker center" id="s8-k" style="top:150px">08 — Business Impact</div>
+      <h2 class="abs h1 center split" id="s8-title" style="top:192px;font-size:72px">Connected, simpler, <em>ready to grow.</em></h2>
+      <div class="imp glass" id="i1"><span class="n">01</span><div class="ic"><svg class="ico" data-i="network"></svg></div><h3>Connected<br>Experience</h3><p>One destination for every healthcare service.</p><span class="rl"></span></div>
+      <div class="imp glass" id="i2"><span class="n">02</span><div class="ic"><svg class="ico" data-i="search"></svg></div><h3>Easier<br>Discovery</h3><p>Patients and families find the right care faster.</p><span class="rl"></span></div>
+      <div class="imp glass" id="i3"><span class="n">03</span><div class="ic"><svg class="ico" data-i="layers"></svg></div><h3>Centralized<br>Management</h3><p>Less duplicate content, simpler updates.</p><span class="rl"></span></div>
+      <div class="imp glass" id="i4"><span class="n">04</span><div class="ic"><svg class="ico" data-i="chart"></svg></div><h3>Built for<br>Growth</h3><p>Ready for referrals, commerce and automation.</p><span class="rl"></span></div>
+    </section>
+
+    <!-- 09 BEFORE / AFTER -->
+    <section class="scene" id="s9">
+      <h2 class="abs h1 center split" id="s9-title" style="top:104px;font-size:66px">From four websites to <em>one platform.</em></h2>
+      <div class="panel glass" id="before" style="left:120px;background:linear-gradient(180deg,rgba(243,245,247,.92),rgba(236,239,242,.8))">
+        <div class="tag" style="color:#7B8494">BEFORE</div>
+        <div class="mini" style="left:40px;top:96px"><span class="tile"><svg class="ico" data-i="home"></svg></span><b>Home Nursing</b></div>
+        <div class="mini" style="left:430px;top:96px"><span class="tile"><svg class="ico" data-i="truck"></svg></span><b>Transportation</b></div>
+        <div class="mini" style="left:40px;top:238px"><span class="tile"><svg class="ico" data-i="inst"></svg></span><b>Health Institute</b></div>
+        <div class="mini" style="left:430px;top:238px"><span class="tile"><svg class="ico" data-i="pill"></svg></span><b>Medical Supplies</b></div>
+        <div class="li bad" style="top:430px"><span class="m"><svg class="ico" data-i="x"></svg></span>Four separate websites</div>
+        <div class="li bad" style="top:490px"><span class="m"><svg class="ico" data-i="x"></svg></span>Disconnected experience</div>
+        <div class="li bad" style="top:550px"><span class="m"><svg class="ico" data-i="x"></svg></span>Duplicate content</div>
+        <div class="li bad" style="top:610px"><span class="m"><svg class="ico" data-i="x"></svg></span>Difficult to manage</div>
+      </div>
+      <div class="panel glass" id="after" style="left:990px">
+        <div class="tag" style="color:var(--red)">AFTER</div>
+        <div class="browser" id="after-br">
+          <div class="chrome"><i></i><i></i><i></i><div class="addr"><svg class="ico" data-i="lock"></svg>castorcares.com</div><span style="width:40px"></span></div>
+          <div class="vp"><div class="page" style="transform:scale(.5069)"><img class="shot" src="assets/img/castor-desktop.jpg" alt=""></div></div>
+        </div>
+        <div class="li good" style="top:430px"><span class="m"><svg class="ico" data-i="check"></svg></span>One digital ecosystem</div>
+        <div class="li good" style="top:490px"><span class="m"><svg class="ico" data-i="check"></svg></span>Unified experience</div>
+        <div class="li good" style="top:550px"><span class="m"><svg class="ico" data-i="check"></svg></span>Centralized management</div>
+        <div class="li good" style="top:610px"><span class="m"><svg class="ico" data-i="check"></svg></span>Modern healthcare platform</div>
+      </div>
+    </section>
+
+    <!-- 10 FINAL -->
+    <section class="scene" id="s10">
+      <div class="abs kicker" id="s10-k" style="left:140px;top:262px">10 — Delivered</div>
+      <h2 class="abs h1 split" id="s10-title" style="left:140px;top:312px;font-size:72px;width:780px">One digital ecosystem<br>for <em>four Castor</em><br><em>businesses.</em></h2>
+      <div class="abs" id="s10-tags" style="left:140px;top:600px;display:flex;gap:12px">
+        <span class="pill glass"><svg class="ico" data-i="heart"></svg>Healthcare</span>
+        <span class="pill glass"><svg class="ico" data-i="globe"></svg>Website</span>
+        <span class="pill glass"><svg class="ico" data-i="cart"></svg>Commerce</span>
+        <span class="pill glass"><svg class="ico" data-i="users"></svg>Referrals</span>
+      </div>
+      <div class="abs" id="s10-badges" style="left:140px;top:682px;display:flex;gap:12px">
+        <span class="badge glass"><span class="d" style="background:var(--red)"><svg class="ico" data-i="check"></svg></span>Delivered</span>
+        <span class="badge glass"><span class="d" style="background:var(--teal)"><svg class="ico" data-i="refresh"></svg></span>Ongoing Enhancement</span>
+      </div>
+      <div class="abs" id="laptop">
+        <div class="lap-screen"><div class="vp"><div class="page" id="lap-page"><img class="shot" src="assets/img/castor-desktop.jpg" alt="">
+          <div class="hero-art">
+            <div class="ha-t" style="left:316px;top:150px"><svg class="ico" data-i="home"></svg></div>
+            <div class="ha-t" style="left:506px;top:288px"><svg class="ico" data-i="truck"></svg></div>
+            <div class="ha-t" style="left:434px;top:520px"><svg class="ico" data-i="inst"></svg></div>
+            <div class="ha-t" style="left:198px;top:520px"><svg class="ico" data-i="pill"></svg></div>
+            <div class="ha-t" style="left:126px;top:288px"><svg class="ico" data-i="users"></svg></div>
+            <div class="ha-core"><svg class="ico" data-i="heart"></svg></div>
+          </div></div></div></div>
+        <div class="lap-base"></div>
+      </div>
+      <div class="abs" id="phone"><div class="isl"></div><div class="vp"><div class="page" id="ph-page" style="width:390px"><img class="shot" src="assets/img/castor-mobile.jpg" alt="" style="width:390px"></div></div></div>
+      <div class="chip-o" id="e1"><div class="chip glass" data-bob="9,.3,0"><svg class="ico" data-i="home"></svg></div></div>
+      <div class="chip-o" id="e2"><div class="chip glass" data-bob="10,.27,1.5"><svg class="ico" data-i="truck"></svg></div></div>
+      <div class="chip-o" id="e3"><div class="chip glass" data-bob="8,.33,3"><svg class="ico" data-i="inst"></svg></div></div>
+      <div class="chip-o" id="e4"><div class="chip glass" data-bob="11,.25,4.4"><svg class="ico" data-i="pill"></svg></div></div>
+    </section>
+
+    <!-- END CARD -->
+    <section class="scene" id="s11">
+      <div class="abs" id="end-iso"><svg class="iso-svg" viewBox="40 34 1228 292" fill="#0F0F11" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="end-band"><rect x="100" y="100" width="1110" height="158"/></clipPath></defs><path class="iso-br iso-tl" d="M146.52 69.2H75.2V140.52H49V43H146.52V69.2Z"/><path class="iso-br iso-brr" d="M1258.52 219.11V316.63H1161V290.43H1232.32V219.11H1258.52Z"/><g clip-path="url(#end-band)"><path class="iso-l" d="M120.141 247.281V112.761H147.311V247.281H120.141Z"/><path class="iso-l" d="M252.516 248.8C243.143 248.8 234.403 247.344 226.296 244.43C218.316 241.517 211.603 236.894 206.156 230.56C200.836 224.227 197.479 216.057 196.086 206.05H223.826C224.966 210.357 227.056 213.84 230.096 216.5C233.136 219.034 236.746 220.87 240.926 222.01C245.233 223.15 249.729 223.72 254.416 223.72C257.963 223.72 261.446 223.277 264.866 222.39C268.286 221.504 271.073 219.984 273.226 217.83C275.506 215.677 276.646 212.764 276.646 209.09C276.646 206.304 276.013 204.024 274.746 202.25C273.606 200.477 271.896 199.084 269.616 198.07C267.463 196.93 264.803 195.917 261.636 195.03C258.976 194.27 256.189 193.637 253.276 193.13C250.489 192.624 247.703 191.99 244.916 191.23C242.256 190.47 239.659 189.584 237.126 188.57C232.313 187.304 227.689 185.784 223.256 184.01C218.823 182.11 214.896 179.767 211.476 176.98C208.056 174.067 205.333 170.457 203.306 166.15C201.406 161.844 200.456 156.65 200.456 150.57C200.456 143.984 201.533 138.41 203.686 133.85C205.966 129.29 208.943 125.554 212.616 122.64C216.416 119.6 220.596 117.257 225.156 115.61C229.843 113.964 234.529 112.824 239.216 112.19C243.903 111.557 248.336 111.24 252.516 111.24C261.256 111.24 269.109 112.76 276.076 115.8C283.043 118.84 288.743 123.4 293.176 129.48C297.609 135.56 300.143 143.224 300.776 152.47H274.366C273.859 148.67 272.466 145.567 270.186 143.16C267.906 140.754 264.993 138.98 261.446 137.84C258.026 136.7 254.163 136.13 249.856 136.13C247.069 136.13 244.346 136.384 241.686 136.89C239.026 137.397 236.619 138.22 234.466 139.36C232.439 140.374 230.793 141.767 229.526 143.54C228.386 145.314 227.816 147.467 227.816 150C227.816 152.534 228.513 154.75 229.906 156.65C231.299 158.424 233.326 160.007 235.986 161.4C238.773 162.667 242.003 163.87 245.676 165.01C249.476 166.277 253.466 167.29 257.646 168.05C261.826 168.81 265.816 169.824 269.616 171.09C274.429 172.357 278.926 173.877 283.106 175.65C287.286 177.297 290.959 179.45 294.126 182.11C297.293 184.644 299.763 187.937 301.536 191.99C303.309 195.917 304.196 200.794 304.196 206.62C304.196 214.347 302.739 220.934 299.826 226.38C297.039 231.7 293.176 236.007 288.236 239.3C283.423 242.594 277.913 245 271.706 246.52C265.499 248.04 259.103 248.8 252.516 248.8Z"/><path class="iso-l" d="M414.14 248.8C400.333 248.8 388.427 245.887 378.42 240.06C368.54 234.234 360.94 226.19 355.62 215.93C350.427 205.544 347.83 193.637 347.83 180.21C347.83 166.53 350.49 154.497 355.81 144.11C361.257 133.724 368.983 125.68 378.99 119.98C388.997 114.154 400.903 111.24 414.71 111.24C428.39 111.24 440.17 114.09 450.05 119.79C459.93 125.49 467.53 133.47 472.85 143.73C478.297 153.99 481.02 165.96 481.02 179.64C481.02 193.067 478.297 205.037 472.85 215.55C467.53 225.937 459.867 234.107 449.86 240.06C439.98 245.887 428.073 248.8 414.14 248.8ZM414.52 223.34C423.64 223.34 431.05 221.25 436.75 217.07C442.45 212.89 446.567 207.507 449.1 200.92C451.76 194.334 453.09 187.43 453.09 180.21C453.09 174.89 452.33 169.634 450.81 164.44C449.417 159.247 447.2 154.56 444.16 150.38C441.12 146.2 437.13 142.907 432.19 140.5C427.25 137.967 421.297 136.7 414.33 136.7C405.337 136.7 397.99 138.79 392.29 142.97C386.59 147.024 382.347 152.344 379.56 158.93C376.9 165.517 375.57 172.547 375.57 180.02C375.57 187.494 376.9 194.524 379.56 201.11C382.347 207.697 386.59 213.08 392.29 217.26C398.117 221.314 405.527 223.34 414.52 223.34Z"/><path class="iso-l" d="M528.176 247.281V112.761H623.936V138.031H555.346V172.801H613.296V197.881H555.346V247.281H528.176Z"/><path class="iso-l" d="M668.828 247.281V112.761H695.998V247.281H668.828Z"/><path class="iso-l" d="M864.491 245.2L771.151 151.86V245.2H744.891V113.94H771.151L864.491 207.28V113.94H890.741V245.2H864.491Z"/><path class="iso-l" d="M939.891 247.281V112.761H967.061V247.281H939.891Z"/><path class="iso-l" d="M1050.04 247.281V138.031H1009V112.761H1118.63V138.031H1077.4V247.281H1050.04Z"/><path class="iso-l" d="M1160.52 247.281V112.761H1187.69V247.281H1160.52Z"/><path class="iso-n" fill="#D01919" d="M771.15 245.201H744.9V233.531L864.5 113.931H890.75V125.601L771.15 245.201Z"/></g></svg></div>
+      <div id="end-line"></div>
+      <p class="abs lead center split" id="end-tag" style="top:640px;font-size:32px;color:var(--ink);letter-spacing:-.02em">We build digital ecosystems that simplify complexity<br>and create <em>connected experiences.</em></p>
+      <div class="abs kicker center" id="end-k" style="top:800px">Castor Home Health Solutions · Delivered</div>
+    </section>
+
+    <!-- business cards (persist across scenes 2–5) -->
+    <div class="biz" id="bA"><div data-bob="7,.29,0" data-shake="1"><div class="biz-card glass"><div class="bar"><i></i><i></i><i></i><span class="url">www.homenursing.com</span></div><div class="biz-body"><span class="tile"><svg class="ico" data-i="home"></svg></span><div><div class="biz-name">Home Nursing</div><div class="biz-sub">Separate website</div></div></div><span class="biz-load"></span><span class="biz-dot"></span></div></div></div>
+    <div class="biz" id="bB"><div data-bob="8,.26,1.7" data-shake="1"><div class="biz-card glass"><div class="bar"><i></i><i></i><i></i><span class="url">www.transportation.com</span></div><div class="biz-body"><span class="tile"><svg class="ico" data-i="truck"></svg></span><div><div class="biz-name">Medical Transportation</div><div class="biz-sub">Separate website</div></div></div><span class="biz-load"></span><span class="biz-dot"></span></div></div></div>
+    <div class="biz" id="bC"><div data-bob="7,.31,3.1" data-shake="1"><div class="biz-card glass"><div class="bar"><i></i><i></i><i></i><span class="url">www.healthinstitute.com</span></div><div class="biz-body"><span class="tile"><svg class="ico" data-i="inst"></svg></span><div><div class="biz-name">Health Institute</div><div class="biz-sub">Separate website</div></div></div><span class="biz-load"></span><span class="biz-dot"></span></div></div></div>
+    <div class="biz" id="bD"><div data-bob="8,.24,4.4" data-shake="1"><div class="biz-card glass"><div class="bar"><i></i><i></i><i></i><span class="url">www.medicalsupplies.com</span></div><div class="biz-body"><span class="tile"><svg class="ico" data-i="pill"></svg></span><div><div class="biz-name">Medical Supplies</div><div class="biz-sub">Separate website</div></div></div><span class="biz-load"></span><span class="biz-dot"></span></div></div></div>
+    <div class="abs glass back" id="back"><svg class="ico" data-i="back"></svg>Back</div>
+  </div>
+
+  <div id="cursor"><span class="rip"></span><svg viewBox="0 0 24 24" width="34" height="34"><path d="M4 2.5l15 8-6.6 1.7L9.6 19z" fill="#0B0F17" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+
+  <div id="hud">
+    <div class="tl"><b>Castor</b><span>×</span><b>Isofiniti</b><span style="opacity:.6">— Case Study</span></div>
+    <div class="tr"><span id="hud-name">Opening</span><span style="opacity:.4">/</span><div class="num"><span id="hud-num">01</span></div><span style="opacity:.4">10</span></div>
+    <div class="ticks" id="ticks"></div>
+    <div class="bar"><i id="hud-bar"></i></div>
+  </div>
+</div>
+
+<div id="ui">
+  <button id="pp" aria-label="Play or pause"><svg viewBox="0 0 24 24" fill="currentColor"><path id="pp-ic" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+  <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Scrub timeline">
+  <span id="tc">00.0</span>
+  <button id="rs" aria-label="Restart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg></button>
+</div>
+
+<script src="vendor/gsap.min.js"></script>
+<script>
+(() => {
+const RENDER = /[?&]render\b/.test(location.search);
+if (RENDER) document.documentElement.classList.add('render');
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+/* ---------- icons ---------- */
+const I = {
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  truck:'<path d="M2.5 6.5h11v10h-11z"/><path d="M13.5 9.5h4l3 3.5v3.5h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/><path d="M8 9v4.5M5.75 11.25h4.5"/>',
+  inst:'<path d="M3 21h18"/><path d="M5 21V8.5l7-4.5 7 4.5V21"/><path d="M9.5 21v-4h5v4"/><path d="M12 8.5v4M10 10.5h4"/>',
+  pill:'<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M8.5 8.5l7 7"/>',
+  heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/><path d="M7.6 12.4h2.3l1.2-2.2 1.8 4 1.2-1.8h2.3"/>',
+  steth:'<path d="M6 3v5.5a5 5 0 0 0 10 0V3"/><path d="M11 13.5V16a4 4 0 0 0 8 0v-2"/><circle cx="19" cy="12" r="2"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.9.8 3.1 2.6 3.5 5.2"/>',
+  cart:'<path d="M3 4h2.5l2.2 11h10.6l2-8H6.5"/><circle cx="9" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/>',
+  bolt:'<path d="M13 2.5 4.5 13.5h6.5l-1 8 8.5-11h-6.5z"/>',
+  pen:'<path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10z"/><path d="M14 7l3 3"/>',
+  code:'<path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/>',
+  link:'<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+  shield:'<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="M8.6 12.2l2.4 2.4 4.4-4.6"/>',
+  rocket:'<path d="M14.5 4.5c2.4-1 4.6-1.2 5.5-1-.1 1-.4 3.2-1.5 5.5-1.3 2.8-4 5.3-6.5 6.5l-3-3c1.2-2.5 3.6-5.6 5.5-8z"/><path d="M9 12.5H5.5L8 9.5h3.5M11.5 15v3.5l3-2.5V12.5"/><path d="M6.5 15.5c-1.4.6-2.2 2.3-2.5 4.5 2.2-.3 3.9-1.1 4.5-2.5"/><circle cx="15.5" cy="8.5" r="1.3"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x:'<path d="M7 7l10 10M17 7 7 17"/>',
+  back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  layers:'<path d="M12 3 3 8l9 5 9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/>',
+  chart:'<path d="M3.5 20.5h17"/><path d="M7 17v-4M11 17V10M15 17v-5M19 17V6"/><path d="M5 10.5l5-4 3.5 2.5L19 3.5"/>',
+  network:'<circle cx="12" cy="12" r="2.6"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.5 6.5l3.6 3.6M17.5 6.5l-3.6 3.6M6.5 17.5l3.6-3.6M17.5 17.5l-3.6-3.6"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/>'
+};
+$$('svg[data-i]').forEach(s => { s.setAttribute('viewBox', '0 0 24 24'); s.innerHTML = I[s.dataset.i] || ''; });
+
+/* ---------- word splitting ---------- */
+function split(el) {
+  const walk = node => {
+    [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+          const w = document.createElement('span'); w.className = 'w';
+          const wi = document.createElement('span'); wi.className = 'wi'; wi.textContent = part;
+          w.appendChild(wi); frag.appendChild(w);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && n.tagName !== 'BR') walk(n);
+    });
+  };
+  walk(el);
+}
+$$('.split').forEach(split);
+
+/* ---------- procedural layer (bob, shake, links, particles) ---------- */
+const fx = { bob: 1, shake: 0, link: 0, linkA: 0, flow: 0, typed: 0, amb: 1, ring: 0, brScroll: 0, lapScroll: 0, phScroll: 0, warn: 0 };
+const bobs = $$('[data-bob]').map(el => {
+  const [amp, sp, ph] = el.dataset.bob.split(',').map(Number);
+  return { el, amp, sp, ph, shake: el.dataset.shake === '1' };
+});
+const TAU = Math.PI * 2;
+const nz = (t, p) => Math.sin(t * 13.1 + p * 7.3) * .55 + Math.sin(t * 29.7 + p * 3.1) * .3 + Math.sin(t * 51.3 + p) * .15;
+
+const cards = ['#bA', '#bB', '#bC', '#bD'].map(s => $(s));
+const HUB = { x: 960, y: 540 };
+const svgNS = 'http://www.w3.org/2000/svg';
+const linkEls = cards.map(() => {
+  const g = document.createElementNS(svgNS, 'g');
+  const base = document.createElementNS(svgNS, 'path');
+  base.setAttribute('fill', 'none'); base.setAttribute('stroke', 'rgba(15,32,58,.22)'); base.setAttribute('stroke-width', '1.6');
+  base.setAttribute('pathLength', '1'); base.setAttribute('stroke-dasharray', '1 1');
+  const hot = document.createElementNS(svgNS, 'path');
+  hot.setAttribute('fill', 'none'); hot.setAttribute('stroke', '#D41100'); hot.setAttribute('stroke-width', '2');
+  hot.setAttribute('pathLength', '1'); hot.setAttribute('stroke-linecap', 'round');
+  const dot = document.createElementNS(svgNS, 'circle'); dot.setAttribute('r', '5'); dot.setAttribute('fill', '#fff'); dot.setAttribute('stroke', '#D41100'); dot.setAttribute('stroke-width', '2');
+  g.append(base, hot, dot); $('#links').appendChild(g);
+  return { g, base, hot, dot };
+});
+const curve = (a, b, bend) => {
+  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
+  return { a, b, c: { x: mx - dy / L * bend, y: my + dx / L * bend } };
+};
+const qpt = (q, u) => ({ x: (1 - u) * (1 - u) * q.a.x + 2 * (1 - u) * u * q.c.x + u * u * q.b.x, y: (1 - u) * (1 - u) * q.a.y + 2 * (1 - u) * u * q.c.y + u * u * q.b.y });
+
+const flow = $('#flow').getContext('2d');
+const amb = $('#ambient').getContext('2d');
+const AMB = Array.from({ length: 46 }, (_, i) => ({ x: (i * 431.7) % 1920, y: (i * 271.3) % 1080, r: 1.2 + (i % 5) * .5, sp: 8 + (i % 7) * 3, ph: i * 1.7 }));
+
+const brPage = $('#br-page'), br = $('#br'), lapPage = $('#lap-page'), phPage = $('#ph-page');
+const hudNum = $('#hud-num'), hudName = $('#hud-name'), hudBar = $('#hud-bar'), typedEl = $('#typed');
+const SCENES = [[0, 'Opening'], [4, 'The Challenge'], [8.2, 'Customer Frustration'], [12.4, 'Isofiniti Enters'], [16, 'The Ecosystem'], [21, 'Building the Platform'], [25, 'Website Reveal'], [30, 'Business Impact'], [34, 'Before vs After'], [38, 'Delivered']];
+const DURATION = 46;
+SCENES.forEach(([s]) => { const i = document.createElement('i'); i.style.left = (s / DURATION * 100) + '%'; $('#ticks').appendChild(i); });
+const TYPE = 'home care near me';
+const SEL_TXT = ['Navigation / 836 × 48', 'Hero / 836 × 270', 'Services / 4 cards', 'Referral CTA / 836 × 50'];
+const selLabel = $('#sel span');
+
+function tick(t) {
+  // bob + shake
+  for (const b of bobs) {
+    const w = t * b.sp * TAU + b.ph;
+    let y = Math.sin(w) * b.amp * fx.bob, x = Math.cos(w * .7) * b.amp * .35 * fx.bob, r = Math.sin(w * .8) * b.amp * .05 * fx.bob;
+    if (b.shake && fx.shake > 0) { x += nz(t, b.ph) * 16 * fx.shake; y += nz(t + 3.3, b.ph + 1) * 10 * fx.shake; r += nz(t + 7, b.ph) * 2.2 * fx.shake; }
+    b.el.style.transform = `translate(${x.toFixed(2)}px,${y.toFixed(2)}px) rotate(${r.toFixed(3)}deg)`;
+  }
+  // links + flow particles
+  flow.clearRect(0, 0, 1920, 1080);
+  const showLinks = fx.link > 0.001 && fx.linkA > 0.001;
+  $('#links').style.opacity = fx.linkA;
+  cards.forEach((c, i) => {
+    const L = linkEls[i];
+    if (!showLinks) { L.g.style.display = 'none'; return; }
+    L.g.style.display = '';
+    const a = { x: gsap.getProperty(c, 'x'), y: gsap.getProperty(c, 'y') };
+    const q = curve(a, HUB, (i % 2 ? -1 : 1) * 60);
+    const d = `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${q.c.x.toFixed(1)} ${q.c.y.toFixed(1)} ${HUB.x} ${HUB.y}`;
+    L.base.setAttribute('d', d); L.hot.setAttribute('d', d);
+    L.base.setAttribute('stroke-dashoffset', (1 - fx.link).toFixed(4));
+    const head = fx.link;
+    L.hot.setAttribute('stroke-dasharray', `0.12 2`);
+    L.hot.setAttribute('stroke-dashoffset', (0.12 - head).toFixed(4));
+    L.hot.style.opacity = fx.link < 1 ? 1 : 0;
+    const p = qpt(q, Math.min(1, fx.link));
+    L.dot.setAttribute('cx', p.x.toFixed(1)); L.dot.setAttribute('cy', p.y.toFixed(1));
+    L.dot.style.opacity = fx.link < 1 ? 1 : 0;
+    if (fx.flow > 0.001) {
+      for (let k = 0; k < 5; k++) {
+        let u = ((t * .32 + k / 5 + i * .13) % 1);
+        if (i % 2) u = 1 - u;
+        const P = qpt(q, u);
+        const fade = Math.sin(u * Math.PI);
+        const red = (k + i) % 4 === 0;
+        flow.globalAlpha = fx.flow * fade * .35;
+        flow.fillStyle = red ? '#D41100' : '#2AB3B8';
+        flow.beginPath(); flow.arc(P.x, P.y, 9, 0, TAU); flow.fill();
+        flow.globalAlpha = fx.flow * fade;
+        flow.beginPath(); flow.arc(P.x, P.y, 3.4, 0, TAU); flow.fill();
+      }
+    }
+  });
+  flow.globalAlpha = 1;
+  // ambient dust
+  amb.clearRect(0, 0, 1920, 1080);
+  if (fx.amb > 0) {
+    for (const p of AMB) {
+      const y = ((p.y - t * p.sp) % 1080 + 1080) % 1080, x = p.x + Math.sin(t * .4 + p.ph) * 18;
+      const a = (0.25 + 0.25 * Math.sin(t * .9 + p.ph)) * (y / 1080) * fx.amb;
+      amb.globalAlpha = a; amb.fillStyle = p.r > 2.6 ? '#D41100' : '#198387';
+      amb.beginPath(); amb.arc(x, y, p.r, 0, TAU); amb.fill();
+    }
+    amb.globalAlpha = 1;
+  }
+  // rings rotate
+  $('#ring1').setAttribute('transform', `rotate(${t * 6})`);
+  $('#ring2').setAttribute('transform', `rotate(${-t * 9})`);
+  $('#ring3').setAttribute('transform', `rotate(${t * 4})`);
+  // warning pulse
+  $$('.warn').forEach((w, i) => w.style.setProperty('--p', (1 + ((t * .9 + i * .4) % 1) * .6).toFixed(3)));
+  // selection label (scene 6)
+  const si6 = Math.max(0, Math.min(3, Math.floor((t - 22.0) / .34)));
+  if (selLabel.textContent !== SEL_TXT[si6]) selLabel.textContent = SEL_TXT[si6];
+  // typing
+  const n = Math.round(fx.typed * TYPE.length);
+  if (typedEl.textContent.length !== n) typedEl.textContent = TYPE.slice(0, n);
+  // site pages: scale to their viewport width
+  const bw = br.offsetWidth;
+  brPage.style.transform = `scale(${(bw / 1440).toFixed(5)}) translateY(${-fx.brScroll}px)`;
+  lapPage.style.transform = `scale(${(868 / 1440).toFixed(5)}) translateY(${-fx.lapScroll}px)`;
+  phPage.style.transform = `scale(${(204 / 390).toFixed(5)}) translateY(${-fx.phScroll}px)`;
+  // HUD
+  let si = 0; SCENES.forEach(([s], i) => { if (t >= s) si = i; });
+  const label = String(si + 1).padStart(2, '0');
+  if (hudNum.textContent !== label) { hudNum.textContent = label; hudName.textContent = SCENES[si][1]; }
+  const since = t - SCENES[si][0];
+  hudNum.style.transform = `translateY(${since < .5 ? (1 - gsap.parseEase('expo.out')(since / .5)) * 20 : 0}px)`;
+  hudBar.style.transform = `scaleX(${Math.min(1, t / DURATION).toFixed(5)})`;
+}
+
+/* ---------- timeline ---------- */
+gsap.defaults({ ease: 'expo.out', duration: 1 });
+const tl = gsap.timeline({ paused: true, onUpdate: () => tick(tl.time()) });
+const show = (sel, at) => tl.set(sel, { visibility: 'visible' }, at);
+const hide = (sel, at) => tl.set(sel, { visibility: 'hidden' }, at);
+const wordsIn = (sel, at, o = {}) => tl.fromTo(`${sel} .wi`, { yPercent: 150, rotate: 4 }, { yPercent: 0, rotate: 0, duration: 1.1, stagger: o.stagger ?? .055, ease: 'expo.out' }, at);
+const wordsOut = (sel, at, o = {}) => tl.to(`${sel} .wi`, { yPercent: -150, duration: .5, stagger: o.stagger ?? .02, ease: 'power3.in' }, at);
+const rise = (sel, at, o = {}) => tl.fromTo(sel, { opacity: 0, y: o.y ?? 30, filter: `blur(${o.blur ?? 10}px)` }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: o.d ?? 1, stagger: o.stagger ?? 0, ease: o.ease ?? 'expo.out' }, at);
+const sink = (sel, at, o = {}) => tl.to(sel, { opacity: 0, y: o.y ?? -20, filter: `blur(${o.blur ?? 8}px)`, duration: o.d ?? .5, stagger: o.stagger ?? 0, ease: 'power2.in' }, at);
+
+// initial states
+gsap.set('#bg .cyan', { opacity: 0, y: 240 });
+gsap.set(['#bg .o1', '#bg .o2'], { opacity: 0 });
+gsap.set(cards, { xPercent: -50, yPercent: -50, x: 960, y: 540, opacity: 0 });
+gsap.set(['#hub', '#halo', '#halo2', '#rings'], { xPercent: -50, yPercent: -50 });
+gsap.set(['.node .ok', '.imp .rl'], { scale: 0 });
+gsap.set('.imp .rl', { scale: 1, scaleX: 0 });
+gsap.set(['#s4-iso', '#phone', '#after', '#s10 .chip-o', '#s10-title', '#s10-tags', '#s10-badges', '#s1-logo', '#s1-tags', '#ch1,#ch2,#ch3,#ch4', '#s3-search'], { filter: 'blur(0px)' });
+gsap.set('#cursor', { x: 1500, y: 1000, opacity: 0 });
+gsap.set('#hud', { opacity: 0 });
+gsap.set('#back', { opacity: 0 });
+
+/* ===== 01 OPENING 0 – 4 ===== */
+show('#s1', 0);
+tl.to('#bg .cyan', { opacity: 1, y: 0, duration: 2.4, ease: 'power3.out' }, 0);
+tl.to(['#bg .o1', '#bg .o2'], { opacity: (i) => [.55, .5][i], duration: 2.4, ease: 'power2.out' }, .2);
+tl.to('#hud', { opacity: 1, duration: 1, ease: 'power2.out' }, .6);
+tl.fromTo('#s1-logo .sw-rect', { attr: { width: 0 } }, { attr: { width: 1994 }, duration: 1.3, ease: 'expo.inOut' }, .1);
+tl.fromTo('#s1-logo .c-l', { opacity: 0, y: 140 }, { opacity: 1, y: 0, duration: .9, stagger: .06, ease: 'expo.out' }, .35);
+tl.fromTo('#s1-logo .c-star', { scale: 0, rotation: -200, transformOrigin: '50% 50%' }, { scale: 1, rotation: 0, duration: 1.1, ease: 'back.out(2)' }, .75);
+tl.to('#s1-logo', { y: -300, scale: .5, duration: 1.1, ease: 'expo.inOut' }, 1.35);
+rise('#s1-k', 1.85, { y: 12 });
+wordsIn('#s1-title', 1.8);
+rise('#s1-sub', 2.35, { y: 16 });
+rise('#s1-tags .pill', 2.5, { y: 18, stagger: .08 });
+const CH = [[250, 300], [1670, 290], [300, 820], [1640, 830], [150, 560], [1780, 560]];
+CH.forEach(([x, y], i) => gsap.set(`#ch${i + 1}`, { x: x - 46, y: y - 46 }));
+tl.fromTo('.chip-o[id^=ch]', { opacity: 0, scale: .4, filter: 'blur(12px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.2, stagger: .09, ease: 'back.out(1.6)' }, .6);
+// exit: words up, chips 1–4 fly into the four business cards
+wordsOut('#s1-title', 3.55);
+sink(['#s1-k', '#s1-sub', '#s1-tags', '#s1-logo'], 3.6);
+const S2POS = [[560, 470, -2], [1360, 470, 1.6], [560, 790, 1.3], [1360, 790, -1.5]];
+[1, 2, 3, 4].forEach((n, i) => tl.to(`#ch${n}`, { x: S2POS[i][0] - 46 - 160, y: S2POS[i][1] - 46 + 10, scale: .62, duration: .8, ease: 'expo.inOut' }, 3.55 + i * .04));
+tl.to('#ch1,#ch2,#ch3,#ch4', { opacity: 0, duration: .25, ease: 'none' }, 4.2);
+tl.to('#ch5,#ch6', { opacity: 0, scale: .6, filter: 'blur(10px)', duration: .5, ease: 'power2.in' }, 3.6);
+hide('#s1', 4.5);
+
+/* ===== 02 CHALLENGE 4 – 8.2 ===== */
+show('#s2', 3.9);
+rise('#s2-k', 4.0, { y: 10 });
+wordsIn('#s2-title', 4.0);
+cards.forEach((c, i) => tl.fromTo(c, { opacity: 0, x: S2POS[i][0], y: S2POS[i][1] + 30, scale: .86, rotation: 0, filter: 'blur(14px)' },
+  { opacity: 1, y: S2POS[i][1], scale: 1, rotation: S2POS[i][2], filter: 'blur(0px)', duration: 1.1, ease: 'expo.out' }, 4.05 + i * .08));
+tl.fromTo('#s2 .brk:not(.v)', { scaleX: 0, transformOrigin: (i) => i % 2 ? '100% 50%' : '0% 50%' }, { scaleX: 1, duration: .8, ease: 'expo.out', stagger: .05 }, 5.0);
+tl.fromTo('#s2 .brk.v', { scaleY: 0, transformOrigin: (i) => i % 2 ? '50% 100%' : '50% 0%' }, { scaleY: 1, duration: .8, ease: 'expo.out', stagger: .05 }, 5.1);
+tl.fromTo('.warn', { scale: 0 }, { scale: 1, duration: .8, ease: 'back.out(3)', stagger: .12 }, 5.5);
+cards.forEach((c, i) => tl.to(`${['#bA', '#bB', '#bC', '#bD'][i]} .biz-dot`, { opacity: 1, duration: .3, ease: 'power2.out' }, 5.7 + i * .07));
+rise('#s2-sub', 5.9, { y: 14 });
+wordsOut('#s2-title', 7.65);
+sink(['#s2-k', '#s2-sub', '.warn', '#s2 .brk'], 7.7);
+hide('#s2', 8.3);
+
+/* ===== 03 FRUSTRATION 8.2 – 12.4 ===== */
+show('#s3', 8.0);
+const S3POS = [[1210, 450, -4], [1520, 540, 3], [1250, 720, 2.5], [1540, 810, -3]];
+cards.forEach((c, i) => tl.to(c, { x: S3POS[i][0], y: S3POS[i][1], rotation: S3POS[i][2], scale: .84, duration: 1.1, ease: 'expo.inOut' }, 7.95 + i * .05));
+tl.to('.biz-dot', { opacity: 0, duration: .3 }, 8.0);
+rise('#s3-k', 8.35, { y: 10 });
+wordsIn('#s3-title', 8.35, { stagger: .05 });
+tl.fromTo('#s3-search', { opacity: 0, y: -20, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'expo.out' }, 8.45);
+tl.to(fx, { typed: 1, duration: .8, ease: 'none' }, 8.9);
+tl.to('#s3-search .caret', { opacity: 0, duration: .01, repeat: 7, yoyo: true, repeatDelay: .25 }, 8.5);
+// cursor journey
+const ripple = at => tl.fromTo('#cursor .rip', { scale: .3, opacity: 1 }, { scale: 1.4, opacity: 0, duration: .5, ease: 'power2.out' }, at);
+tl.to('#cursor', { opacity: 1, duration: .3, ease: 'power2.out' }, 8.9);
+tl.to('#cursor', { x: 1650, y: 196, duration: .7, ease: 'power3.inOut' }, 9.0);
+ripple(9.7);
+const clickCard = (i, at) => {
+  const [x, y] = S3POS[i];
+  tl.to('#cursor', { x: x + 40, y: y + 10, duration: .42, ease: 'power3.inOut' }, at - .42);
+  ripple(at);
+  tl.set(cards[i], { zIndex: 10 + Math.round(at * 10) }, at);
+  tl.fromTo(cards[i], { scale: .84 }, { scale: .9, duration: .3, ease: 'power2.out', yoyo: true, repeat: 1 }, at);
+  tl.fromTo(`${['#bA', '#bB', '#bC', '#bD'][i]} .biz-load`, { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: .35, ease: 'power1.inOut' }, at + .02);
+  tl.to(`${['#bA', '#bB', '#bC', '#bD'][i]} .biz-load`, { opacity: 0, duration: .15 }, at + .38);
+  tl.set('#back', { x: x - 210, y: y - 150 }, at + .2);
+  tl.fromTo('#back', { opacity: 0, scale: .9 }, { opacity: 1, scale: 1, duration: .15, ease: 'power2.out' }, at + .2);
+  tl.to('#back', { opacity: 0, duration: .12 }, at + .42);
+};
+clickCard(0, 10.15); clickCard(1, 10.6); clickCard(2, 11.02); clickCard(3, 11.42);
+// ghost windows multiply chaos
+const GH = [[1090, 330, -7], [1720, 330, 6], [1080, 900, 5], [1740, 930, -6], [1380, 640, -2], [1600, 640, 4]];
+const ghostTpl = $('#g1');
+const ghosts = GH.map((g, i) => {
+  const el = i === 0 ? ghostTpl : ghostTpl.cloneNode(true);
+  if (i) { el.id = 'g' + (i + 1); ghostTpl.parentNode.insertBefore(el, ghostTpl.nextSibling); }
+  el.innerHTML = '<div class="gb"><i></i><i></i><i></i><span></span></div><div class="sk b"></div><div class="sk" style="width:70%"></div><div class="sk" style="width:52%"></div><div class="sk" style="width:62%"></div>';
+  gsap.set(el, { xPercent: -50, yPercent: -50, x: g[0], y: g[1], rotation: g[2], opacity: 0, filter: 'blur(0px)' });
+  return el;
+});
+ghosts.forEach((g, i) => bobs.push({ el: g.firstChild, amp: 0, sp: .3, ph: i * 2, shake: true }));
+ghosts.forEach((g, i) => tl.fromTo(g, { opacity: 0, scale: .7 }, { opacity: .85, scale: 1, duration: .5, ease: 'back.out(1.6)' }, 9.95 + i * .26));
+rise('#s3 .frus', 10.3, { y: 14, stagger: .38 });
+tl.to(fx, { shake: 1, duration: 1.5, ease: 'power2.in' }, 10.4);
+tl.to(fx, { shake: 0, duration: .5, ease: 'power3.out' }, 12.0);
+tl.to('#cursor', { opacity: 0, duration: .3 }, 11.95);
+tl.to(ghosts, { opacity: 0, scale: .85, filter: 'blur(14px)', duration: .6, ease: 'power2.in', stagger: .03 }, 11.95);
+wordsOut('#s3-title', 11.95);
+sink(['#s3-k', '#s3 .frus', '#s3-search'], 12.0);
+hide('#s3', 12.7);
+
+/* ===== 04 ISOFINITI ENTERS 12.4 – 16 ===== */
+show('#s4', 12.3);
+const S4POS = [[400, 330], [1520, 330], [400, 830], [1520, 830]];
+cards.forEach((c, i) => tl.to(c, { x: S4POS[i][0], y: S4POS[i][1], rotation: 0, scale: 1, duration: 1.3, ease: 'expo.inOut' }, 12.3 + i * .04));
+tl.to('.biz-card', { width: 340, height: 108, duration: 1.1, ease: 'expo.inOut' }, 12.35);
+tl.to('.biz .bar', { height: 0, opacity: 0, borderBottomWidth: 0, duration: .9, ease: 'expo.inOut' }, 12.35);
+tl.to('.biz-sub', { opacity: 0, height: 0, marginTop: 0, duration: .6, ease: 'power2.inOut' }, 12.35);
+tl.to('.biz-body', { padding: '24px 22px', duration: .9, ease: 'expo.inOut' }, 12.35);
+tl.to('.biz-name', { fontSize: 22, duration: .9, ease: 'expo.inOut' }, 12.35);
+tl.to('#rl-glow,#rl', { attr: { 'stroke-dashoffset': 0 }, duration: 1.3, ease: 'expo.inOut' }, 12.55);
+tl.fromTo('#s4-iso .iso-tl', { x: -80, y: -60, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.1, ease: 'expo.out' }, 12.9);
+tl.fromTo('#s4-iso .iso-brr', { x: 80, y: 60, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.1, ease: 'expo.out' }, 12.9);
+tl.fromTo('#s4-iso .iso-l', { y: 170 }, { y: 0, duration: 1, stagger: .045, ease: 'expo.out' }, 13.0);
+tl.fromTo('#s4-iso .iso-n', { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .8, ease: 'back.out(2.2)' }, 13.4);
+wordsIn('#s4-title', 13.55, { stagger: .06 });
+// network lines from every business to the core
+tl.set(fx, { linkA: 1 }, 14.2);
+tl.fromTo(fx, { link: 0 }, { link: 1, duration: 1.2, ease: 'power2.inOut' }, 14.3);
+tl.to('#rl-glow,#rl', { opacity: 0, duration: .6, ease: 'power2.in' }, 14.6);
+wordsOut('#s4-title', 15.3);
+tl.to('#s4-iso', { y: -40, scale: .6, opacity: 0, filter: 'blur(10px)', duration: .7, ease: 'power3.in' }, 15.3);
+hide('#s4', 16.1);
+
+/* ===== 05 ECOSYSTEM 16 – 21 ===== */
+show('#s5', 15.5);
+const S5POS = [[430, 330], [1490, 330], [430, 750], [1490, 750]];
+cards.forEach((c, i) => tl.to(c, { x: S5POS[i][0], y: S5POS[i][1], duration: 1.6, ease: 'expo.inOut' }, 15.4 + i * .05));
+tl.fromTo('#halo', { opacity: 0, scale: .5 }, { opacity: 1, scale: 1, duration: 2, ease: 'expo.out' }, 15.7);
+tl.fromTo('#halo2', { opacity: 0 }, { opacity: 1, duration: 2 }, 16.0);
+tl.fromTo('#rings', { opacity: 0, scale: .7 }, { opacity: 1, scale: 1, duration: 2, ease: 'expo.out' }, 15.8);
+tl.fromTo('#hub', { opacity: 0, scale: .6, filter: 'blur(20px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.4, ease: 'expo.out' }, 15.75);
+tl.fromTo('#hub img, #hub .t, #hub .m', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 1, stagger: .1 }, 16.0);
+tl.to(fx, { flow: 1, duration: 1.2, ease: 'power2.out' }, 16.3);
+tl.to('.biz-card', { borderColor: 'rgba(212,17,0,.22)', duration: .6 }, 16.5);
+rise('#s5-for', 17.3, { y: 10 });
+rise('#s5-plat .pill', 17.45, { y: 22, stagger: .12, blur: 12 });
+tl.fromTo('#camera', { scale: 1 }, { scale: 1.045, duration: 5, ease: 'none' }, 16.0);
+
+/* ===== 06 BUILDING 21 – 25 ===== */
+tl.to('#camera', { scale: 3.4, duration: .9, ease: 'expo.in' }, 20.6);
+tl.to(['#hub', '#rings', '#halo', '#halo2', '#s5-for', '#s5-plat'], { opacity: 0, duration: .5, ease: 'power2.in' }, 20.95);
+tl.to(cards, { opacity: 0, duration: .4, ease: 'power2.in' }, 20.8);
+tl.to(fx, { flow: 0, linkA: 0, duration: .4 }, 20.8);
+hide('#s5', 21.5);
+tl.set(fx, { link: 0 }, 21.5);
+tl.set('#camera', { scale: 1 }, 21.5);
+show('#s6', 21.5);
+tl.fromTo('#s6', { scale: 1.25, opacity: 0, filter: 'blur(16px)' }, { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'expo.out' }, 21.5);
+rise('#s6-k', 21.6, { y: 10 });
+tl.fromTo('#pipe-fill', { scaleX: 0 }, { scaleX: 1, duration: 3.0, ease: 'power1.inOut' }, 21.75);
+const nodes = $$('#s6 .node');
+nodes.forEach((n, i) => {
+  const at = 21.7 + i * .62;
+  tl.fromTo(n, { opacity: 0, scale: .6, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: .7, ease: 'back.out(2)' }, 21.55 + i * .07);
+  tl.to(n, { color: '#D41100', duration: .3 }, at);
+  tl.fromTo(n.querySelector('.ring'), { opacity: 1, scale: 1 }, { opacity: 0, scale: 1.6, duration: .8, ease: 'power2.out' }, at);
+  tl.to(n.querySelector('.ok'), { scale: 1, duration: .5, ease: 'back.out(3)' }, at + .3);
+});
+rise('#layers', 21.7, { y: 20 });
+tl.fromTo('#board', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out' }, 21.65);
+// components assemble (design)
+const CMPS = [['.cmp-nav', -70, 0], ['.cmp-hero', 0, 90], ['.cmp-tile', 0, 60], ['.cmp-cta', 0, 60]];
+CMPS.forEach(([s, dx, dy], i) => tl.fromTo(`#board ${s}`, { opacity: 0, x: dx, y: dy, rotation: i === 1 ? -2 : 0 }, { opacity: 1, x: 0, y: 0, rotation: 0, duration: .7, stagger: .07, ease: 'back.out(1.3)' }, 21.95 + i * .34));
+const lyr = $$('#layers .lyr');
+lyr.forEach((l, i) => tl.to(l, { backgroundColor: 'rgba(212,17,0,.07)', color: '#D41100', duration: .15 }, 21.95 + Math.min(i, 3) * .34).to(l, { backgroundColor: 'rgba(212,17,0,0)', color: '#0B0F17', duration: .3 }, 22.3 + Math.min(i, 3) * .34));
+const SEL = [[22, 20, 836, 48, 'Navigation / 836 × 48'], [22, 84, 836, 270, 'Hero / 836 × 270'], [22, 372, 836, 120, 'Services / 4 cards'], [22, 508, 836, 50, 'Referral CTA']];
+gsap.set('#sel', { left: 22, top: 20, width: 836, height: 48 });
+gsap.set('#mcur', { x: 900, y: 600 });
+tl.to('#sel', { opacity: 1, duration: .2 }, 22.0);
+SEL.forEach(([l, t, w, h, txt], i) => {
+  tl.to('#sel', { left: l, top: t, width: w, height: h, duration: .32, ease: 'expo.out' }, 22.0 + i * .34);
+  tl.to('#mcur', { x: l + w * .62, y: t + h * .7, duration: .34, ease: 'power3.inOut' }, 21.85 + i * .34);
+});
+tl.to('#sel', { opacity: 0, duration: .2 }, 23.5);
+tl.to('#mcur', { x: 860, y: 640, opacity: 0, duration: .5, ease: 'power2.in' }, 23.5);
+// development
+tl.fromTo('#code', { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: .8 }, 22.2);
+tl.fromTo('#code .cl', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: .32, stagger: .14, ease: 'none' }, 22.35);
+// integration
+rise('#s6 .integ', 22.85, { y: 20, stagger: .1 });
+// testing
+tl.fromTo('#scan', { opacity: 1, y: -90 }, { y: 560, duration: .9, ease: 'power1.inOut' }, 23.45);
+tl.to('#scan', { opacity: 0, duration: .2 }, 24.3);
+rise('#s6 .test', 23.5, { y: 16, stagger: .14 });
+// launch → board becomes the browser
+const BOARD = { x: 520 + 440, y: 330 + 290, w: 880, h: 580 };
+gsap.set('#br', { xPercent: -50, yPercent: -50, x: BOARD.x, y: BOARD.y, width: BOARD.w, height: BOARD.h + 46 });
+sink(['#layers', '#code', '#s6 .test', '#s6 .integ', '#s6 .node', '#pipe-track', '#s6-k'], 24.35, { stagger: .015, d: .45 });
+show('#s7', 24.5);
+tl.fromTo('#br', { opacity: 0 }, { opacity: 1, duration: .35, ease: 'power1.inOut' }, 24.5);
+tl.to('#board', { opacity: 0, duration: .35 }, 24.6);
+hide('#s6', 25.0);
+
+/* ===== 07 WEBSITE REVEAL 25 – 30 ===== */
+gsap.set('#br', { transformPerspective: 2400, filter: 'blur(0px)' });
+tl.to('#br', { x: 960, y: 610, width: 1400, height: 800, duration: 1.3, ease: 'expo.inOut' }, 24.75);
+tl.fromTo('#br', { rotationX: 10 }, { rotationX: 0, duration: 1.6, ease: 'expo.out', immediateRender: false }, 25.0);
+rise('#s7-k', 25.5, { y: 10 });
+wordsIn('#s7-title', 25.45);
+const FC = [[200, 430], [1740, 470], [1730, 820], [230, 800]];
+FC.forEach(([x, y], i) => gsap.set(`#f${i + 1}`, { x, y, xPercent: -50, yPercent: -50 }));
+tl.fromTo('.floatc', { opacity: 0, scale: .8, filter: 'blur(12px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1, stagger: .15, ease: 'back.out(1.6)' }, 26.0);
+tl.fromTo('.hero-art .ha-t', { opacity: 0, scale: .5 }, { opacity: 1, scale: 1, duration: .8, stagger: .07, ease: 'back.out(2)' }, 25.3);
+tl.to(fx, { brScroll: 170, duration: 1.1, ease: 'power3.inOut' }, 26.15);
+// cursor → Get Started (page px → stage px)
+const brToStage = (px, py, scroll) => { const s = 1400 / 1440; return [260 + px * s, 210 + 46 + (py - scroll) * s]; };
+const [gx, gy] = brToStage(112 + 120, 766 + 36, 170);
+tl.set('#cursor', { x: 1250, y: 1000 }, 26.2);
+tl.to('#cursor', { opacity: 1, duration: .3 }, 26.25);
+tl.to('#cursor', { x: gx, y: gy, duration: .9, ease: 'power3.inOut' }, 26.3);
+tl.to('#hot', { boxShadow: '0 0 0 6px rgba(42,179,184,.28), 0 16px 40px -6px rgba(25,131,135,.75)', backgroundColor: 'rgba(255,255,255,.12)', duration: .35, ease: 'power2.out' }, 27.05);
+ripple(27.4);
+tl.to('#hot', { scale: .95, duration: .1, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 27.4);
+tl.to('#hot', { boxShadow: '0 0 0 0px rgba(42,179,184,0), 0 0 0 0 rgba(25,131,135,0)', backgroundColor: 'rgba(255,255,255,0)', duration: .4 }, 27.8);
+tl.to(fx, { brScroll: 1620, duration: 1.4, ease: 'expo.inOut' }, 27.7);
+tl.to('#cursor', { x: 760, y: 720, duration: 1.2, ease: 'power3.inOut' }, 27.8);
+tl.to(fx, { brScroll: 1740, duration: 1.2, ease: 'power1.out' }, 29.1);
+tl.to('#cursor', { opacity: 0, duration: .3 }, 29.3);
+wordsOut('#s7-title', 29.45);
+sink(['#s7-k', '.floatc'], 29.5, { stagger: .03 });
+tl.to('#br', { y: 600, scale: .66, opacity: .28, filter: 'blur(7px)', duration: 1, ease: 'expo.inOut' }, 29.5);
+
+/* ===== 08 IMPACT 30 – 34 ===== */
+show('#s8', 29.9);
+rise('#s8-k', 30.1, { y: 10 });
+wordsIn('#s8-title', 30.1);
+const IMP = [330, 750, 1170, 1590];
+IMP.forEach((x, i) => gsap.set(`#i${i + 1}`, { x: x - 190, y: 620 - 165, transformPerspective: 1600 }));
+IMP.forEach((x, i) => {
+  const at = 30.55 + i * .42;
+  tl.fromTo(`#i${i + 1}`, { opacity: 0, y: 620 - 165 + 80, rotationX: 28, filter: 'blur(14px)' }, { opacity: 1, y: 620 - 165, rotationX: 0, filter: 'blur(0px)', duration: 1.1, ease: 'expo.out' }, at);
+  tl.fromTo(`#i${i + 1} .ic`, { scale: .4, rotation: -20 }, { scale: 1, rotation: 0, duration: .8, ease: 'back.out(2.4)' }, at + .15);
+  tl.to(`#i${i + 1} .rl`, { scaleX: 1, duration: .8, ease: 'expo.inOut' }, at + .3);
+});
+wordsOut('#s8-title', 33.5);
+sink('#s8-k', 33.55);
+tl.to('.imp', { opacity: 0, y: '-=40', filter: 'blur(10px)', duration: .55, stagger: .05, ease: 'power2.in' }, 33.5);
+tl.to('#br', { opacity: 0, duration: .5 }, 33.5);
+hide('#s7', 34.1); hide('#s8', 34.2);
+
+/* ===== 09 BEFORE / AFTER 34 – 38 ===== */
+show('#s9', 33.9);
+wordsIn('#s9-title', 34.0);
+tl.fromTo('#before', { opacity: 0, x: -60, filter: 'blur(12px) grayscale(0)' }, { opacity: 1, x: 0, filter: 'blur(0px) grayscale(0)', duration: 1, ease: 'expo.out' }, 34.05);
+rise('#before .mini', 34.2, { y: 16, stagger: .07, blur: 6 });
+rise('#before .li', 34.45, { y: 12, stagger: .08, blur: 6 });
+tl.fromTo('#after', { opacity: 0, clipPath: 'inset(0 100% 0 0 round 32px)' }, { opacity: 1, clipPath: 'inset(0 0% 0 0 round 32px)', duration: 1, ease: 'expo.inOut' }, 34.75);
+tl.fromTo('#after-br', { opacity: 0, scale: .92 }, { opacity: 1, scale: 1, duration: .9 }, 35.1);
+$$('#after .li').forEach((l, i) => {
+  tl.fromTo(l, { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: .7 }, 35.3 + i * .14);
+  tl.fromTo(l.querySelector('.m'), { scale: 0 }, { scale: 1, duration: .6, ease: 'back.out(3)' }, 35.35 + i * .14);
+});
+tl.to('#before', { filter: 'blur(0px) grayscale(1)', duration: .5 }, 35.2);
+// morph: the four old sites fly into the unified platform
+const minis = $$('#before .mini');
+const target = { x: 990 + 40 + 365, y: 230 + 90 + 145 };
+minis.forEach((m, i) => {
+  const r = { x: 120 + parseFloat(m.style.left) + 150, y: 230 + parseFloat(m.style.top) + 59 };
+  tl.to(m, { x: target.x - r.x, y: target.y - r.y, scale: .18, opacity: 0, duration: .85, ease: 'expo.in' }, 36.4 + i * .07);
+});
+tl.fromTo('#after-br', { boxShadow: '0 0 0 0 rgba(212,17,0,0)' }, { boxShadow: '0 0 0 10px rgba(212,17,0,.18)', duration: .25, yoyo: true, repeat: 1, ease: 'power2.out' }, 37.2);
+tl.to('#before', { opacity: 0, x: -80, filter: 'blur(10px) grayscale(1)', duration: .6, ease: 'power2.in' }, 37.1);
+wordsOut('#s9-title', 37.3);
+tl.to('#after', { opacity: 0, scale: 1.04, filter: 'blur(10px)', duration: .6, ease: 'power2.in' }, 37.55);
+hide('#s9', 38.2);
+
+/* ===== 10 FINAL HERO 38 – 46 ===== */
+show('#s10', 37.6);
+gsap.set('#laptop', { xPercent: -50, yPercent: -50, transformPerspective: 2200 });
+gsap.set('#phone', { xPercent: -50, yPercent: -50 });
+tl.fromTo('#laptop', { opacity: 0, y: 120, scale: .85, rotationX: 22, filter: 'blur(14px)' }, { opacity: 1, y: 0, scale: 1, rotationX: 0, filter: 'blur(0px)', duration: 1.6, ease: 'expo.out' }, 37.75);
+tl.fromTo('#phone', { opacity: 0, y: 160, rotation: 8 }, { opacity: 1, y: 0, rotation: 0, duration: 1.5, ease: 'expo.out' }, 38.1);
+rise('#s10-k', 38.15, { y: 10 });
+wordsIn('#s10-title', 38.15, { stagger: .06 });
+rise('#s10-tags .pill', 38.9, { y: 16, stagger: .08 });
+rise('#s10-badges .badge', 39.25, { y: 16, stagger: .12 });
+const EC = [[1010, 150], [1600, 120], [1020, 890], [1560, 930]];
+EC.forEach(([x, y], i) => gsap.set(`#e${i + 1}`, { x: x - 46, y: y - 46 }));
+tl.fromTo('#s10 .chip-o', { opacity: 0, scale: .4 }, { opacity: 1, scale: 1, duration: 1, stagger: .1, ease: 'back.out(1.8)' }, 38.6);
+tl.to(fx, { lapScroll: 260, duration: 3.6, ease: 'power1.inOut' }, 38.8);
+tl.to(fx, { phScroll: 520, duration: 3.6, ease: 'power1.inOut' }, 38.9);
+// end card
+tl.to(['#s10-k', '#s10-title', '#s10-tags', '#s10-badges', '#laptop', '#phone', '#s10 .chip-o'], { opacity: 0, scale: .97, filter: 'blur(14px)', duration: .8, ease: 'power2.in', stagger: .02 }, 42.2);
+tl.to('#hud', { opacity: 0, duration: .6 }, 42.4);
+show('#s11', 42.6);
+tl.fromTo('#end-iso .iso-tl', { x: -90, y: -70, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.2, ease: 'expo.out' }, 42.75);
+tl.fromTo('#end-iso .iso-brr', { x: 90, y: 70, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.2, ease: 'expo.out' }, 42.75);
+tl.fromTo('#end-iso .iso-l', { y: 170 }, { y: 0, duration: 1, stagger: .045, ease: 'expo.out' }, 42.85);
+tl.fromTo('#end-iso .iso-n', { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .8, ease: 'back.out(2.2)' }, 43.25);
+tl.fromTo('#end-line', { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: 'expo.inOut' }, 43.3);
+wordsIn('#end-tag', 43.55, { stagger: .035 });
+rise('#end-k', 44.3, { y: 10 });
+tl.to({}, { duration: .01 }, DURATION - .01);
+
+/* ---------- playback / render API ---------- */
+const stage = $('#stage');
+function fit() {
+  if (RENDER) return;
+  const s = Math.min((innerWidth - 32) / 1920, (innerHeight - 96) / 1080);
+  stage.style.transform = `scale(${s})`;
+  stage.style.left = ((innerWidth - 1920 * s) / 2) + 'px';
+  stage.style.top = Math.max(16, (innerHeight - 70 - 1080 * s) / 2) + 'px';
+}
+addEventListener('resize', fit); fit();
+
+window.SHOWREEL = { duration: DURATION, fps: 60, seek(t) { tl.seek(t, false); tick(t); } };
+tl.seek(0); tick(0);
+
+const ready = Promise.all([document.fonts.ready, ...$$('img').map(i => i.decode ? i.decode().catch(() => {}) : 0)]);
+ready.then(() => {
+  window.SHOWREEL.ready = true;
+  if (RENDER) return;
+  const pp = $('#pp'), ic = $('#pp-ic'), scrub = $('#scrub'), tc = $('#tc');
+  const PAUSE = 'M7 5h4v14H7zM13 5h4v14h-4z', PLAY = 'M8 5l11 7-11 7z';
+  let playing = true, last = performance.now(), t = 0, dragging = false;
+  const loop = now => {
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    if (playing && !dragging) { t += dt; if (t >= DURATION) t = 0; tl.seek(t, false); tick(t); scrub.value = t / DURATION * 1000; }
+    tc.textContent = t.toFixed(1).padStart(4, '0');
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+  const toggle = () => { playing = !playing; ic.setAttribute('d', playing ? PAUSE : PLAY); };
+  pp.onclick = toggle;
+  $('#rs').onclick = () => { t = 0; if (!playing) toggle(); };
+  scrub.oninput = () => { dragging = true; t = scrub.value / 1000 * DURATION; tl.seek(t, false); tick(t); };
+  scrub.onchange = () => { dragging = false; };
+  addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); toggle(); } });
+});
+})();
+</script>
+</body>
+</html>

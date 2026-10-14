@@ -1,0 +1,5 @@
+out/.segments/
+out/test.mp4
+voiceover/clips/
+node_modules/
+.env
