@@ -1,16 +1,71 @@
 {
-  "_note": "One line per scene. 'at' is the second the line starts in the video; 'max' is the time available before the next line.",
+  "_note": "One line per scene, timed to the 59.5s SaaS cut. 'at' = second the line starts; 'max' = room until the next line (longer lines are sped up slightly).",
   "lines": [
-    { "id": "01", "at": 0.6,  "max": 3.3, "text": "Castor Home Health Solutions delivers care — from home nursing to medical supplies." },
-    { "id": "02", "at": 4.3,  "max": 3.8, "text": "But four businesses meant four separate websites. A fragmented experience." },
-    { "id": "03", "at": 8.5,  "max": 3.8, "text": "Patients had to jump between sites just to find the right service." },
-    { "id": "04", "at": 12.8, "max": 3.0, "text": "Isofiniti stepped in — and unified it all." },
-    { "id": "05", "at": 16.2, "max": 4.6, "text": "One digital ecosystem, for service discovery, referrals, commerce, and future automation." },
-    { "id": "06", "at": 21.4, "max": 3.5, "text": "Designed, developed, integrated, and tested — end to end." },
-    { "id": "07", "at": 25.3, "max": 4.4, "text": "The new Castor experience is live. Modern, unified, and easy to navigate." },
-    { "id": "08", "at": 30.3, "max": 3.6, "text": "A connected experience. Easier discovery. Simpler management. Built for growth." },
-    { "id": "09", "at": 34.2, "max": 3.6, "text": "From four disconnected websites, to one unified platform." },
-    { "id": "10", "at": 38.3, "max": 4.2, "text": "One digital ecosystem, for four Castor businesses." },
-    { "id": "11", "at": 42.9, "max": 3.0, "text": "Isofiniti. We build digital ecosystems that simplify complexity." }
+    {
+      "id": "01",
+      "at": 0.5,
+      "max": 4.78,
+      "text": "Castor Home Health Solutions delivers care — from home nursing to medical supplies."
+    },
+    {
+      "id": "02",
+      "at": 5.4,
+      "max": 5.08,
+      "text": "But four businesses meant four separate websites, and a fragmented experience."
+    },
+    {
+      "id": "03",
+      "at": 10.6,
+      "max": 5.58,
+      "text": "Patients jumped from tab to tab, just to find the right service."
+    },
+    {
+      "id": "04",
+      "at": 16.3,
+      "max": 4.48,
+      "text": "Then Isofiniti stepped in, and unified it all."
+    },
+    {
+      "id": "05",
+      "at": 20.9,
+      "max": 6.68,
+      "text": "One digital ecosystem — for service discovery, referrals, commerce, and future automation."
+    },
+    {
+      "id": "06",
+      "at": 27.7,
+      "max": 5.68,
+      "text": "Designed, developed, integrated, and tested — end to end."
+    },
+    {
+      "id": "07",
+      "at": 33.5,
+      "max": 6.78,
+      "text": "The new Castor experience is live. Modern, unified, and easy to navigate."
+    },
+    {
+      "id": "08",
+      "at": 40.4,
+      "max": 5.38,
+      "text": "A connected experience. Easier discovery. Simpler management. Built for growth."
+    },
+    {
+      "id": "09",
+      "at": 45.9,
+      "max": 4.88,
+      "text": "From four disconnected websites, to one unified platform."
+    },
+    {
+      "id": "10",
+      "at": 50.9,
+      "max": 4.28,
+      "text": "One digital ecosystem, for four Castor businesses."
+    },
+    {
+      "id": "11",
+      "at": 55.3,
+      "max": 4.05,
+      "text": "Isofiniti. We build digital ecosystems that simplify complexity."
+    }
   ]
 }

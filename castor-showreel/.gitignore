@@ -3,3 +3,5 @@ out/test.mp4
 voiceover/clips/
 node_modules/
 .env
+out/test-*.mp4
+out/.mix-*.wav
