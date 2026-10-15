@@ -5,3 +5,4 @@ node_modules/
 .env
 out/test-*.mp4
 out/.mix-*.wav
+out/share/
