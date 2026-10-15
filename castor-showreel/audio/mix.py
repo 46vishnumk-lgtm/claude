@@ -222,12 +222,13 @@ def mix(take):
     raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", str(ROOT / "audio" / "music.wav"), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"])
     m = np.frombuffer(raw, np.float32).reshape(-1, 2).T
     mus2[:, :min(N, m.shape[1])] = m[:, :N]
-    total = vo * .9 + mus2 * .26 * duck + sfx_bus() * .5
+    voice_only = __import__('os').environ.get('VOICE_ONLY') == '1'
+    total = vo * .9 if voice_only else vo * .9 + mus2 * .26 * duck + sfx_bus() * .5
     total /= max(1.0, np.max(np.abs(total)) / .95)
     wav = ROOT / "out" / f".mix-{take}.wav"
     save(wav, total)
     video = pathlib.Path(__import__("os").environ.get("VIDEO", ROOT / "out" / "castor-showreel.mp4"))
-    out = ROOT / "out" / (__import__("os").environ.get("PREFIX", "castor-showreel-") + f"{take}.mp4")
+    out = ROOT / "out" / (__import__("os").environ.get("PREFIX", "castor-showreel-") + f"{take}" + ("-voice-only" if voice_only else "") + ".mp4")
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-i", str(wav),
                     "-af", "loudnorm=I=-14:TP=-1.5:LRA=9", "-map", "0:v", "-map", "1:a", "-c:v", "copy",
                     "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-movflags", "+faststart", "-shortest", str(out)], check=True)
