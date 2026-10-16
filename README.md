@@ -52,3 +52,7 @@ The prototype is pinned to Thursday, October 1, 2026 so relative dates stay cons
 ## Notes on research
 
 This is a concept project. Research figures in the case study are labelled as assumptions to validate, and the competitor comparison reflects public product information as of Q3 2026, so re-check it before quoting. The company, people and data in the prototype are fictional.
+
+## Arijentek homepage
+
+[`arijentek-home/`](arijentek-home) holds the source of the Arijentek homepage (React, Vite, Three.js); see its README to run it. [`docs/`](docs) is its production build, served by GitHub Pages (Settings → Pages → Deploy from a branch → this branch, `/docs` folder). After changing the source, rebuild it with `cd arijentek-home && npm ci && npm run build`, then replace `docs/` with `dist/` and keep `docs/.nojekyll`.

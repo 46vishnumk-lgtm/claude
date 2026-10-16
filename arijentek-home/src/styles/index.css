@@ -1,0 +1,1063 @@
+@import "tailwindcss" source(none);
+@source "../**/*.{ts,tsx}";
+
+/* ============================================================
+   ARIJENTEK — DESIGN TOKENS
+   Light off-white primary ground with hard black chapters.
+   Host Grotesk throughout; mono reserved for micro-labels only.
+   ============================================================ */
+
+:root {
+  /* Chapters. A section declares one; nothing travels. */
+  --paper: #f0f0ee;
+  --paper-2: #e6e6e3;
+  --black: #0b0b0b;
+  --black-2: #151515;
+
+  /* Ink on paper */
+  --ink: #111111;
+  --ink-soft: #55534f;
+  --ink-mute: #63615c;
+
+  /* Ink on black */
+  --ink-inv: #f0f0ee;
+  --ink-inv-soft: #a5a49f;
+  --ink-inv-mute: #85837d;
+
+  /* Hairlines */
+  --rule: rgb(17 17 17 / 0.14);
+  --rule-strong: rgb(17 17 17 / 0.3);
+  --rule-inv: rgb(240 240 238 / 0.16);
+  --rule-inv-strong: rgb(240 240 238 / 0.34);
+
+  /* Accent — Arijentek brand. 4.6:1 on paper, 5.7:1 on black. */
+  --accent: #c2410c;
+  --accent-hot: #e2540f;
+  --accent-ink: #ffffff;
+
+  /* Type */
+  --font: "Host Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radii — generous, from the references */
+  --r-sm: 10px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Layout */
+  --gutter: 1.25rem;
+  /* Wide: on large screens the page runs out to the gutters rather than
+     stopping in a narrow column with dead space either side. */
+  --measure: 2048px;
+}
+
+@media (min-width: 768px) {
+  :root { --gutter: 2rem; }
+}
+@media (min-width: 1280px) {
+  :root { --gutter: 2.75rem; }
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; background: var(--black); }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  p { margin: 0; text-wrap: pretty; }
+  ul, ol, dl, dd { margin: 0; padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; }
+  img, video, canvas, svg { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* A jump link's target takes focus so the next Tab continues from it
+     (lib/motion.ts useJumpLinks); it is not a control, so it draws no ring. */
+  [data-jump-target]:focus { outline: none; }
+
+  /* No visible page scrollbar; the page still scrolls by wheel, touch and keys. */
+  html, body { scrollbar-width: none; -ms-overflow-style: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+}
+
+@layer components {
+  /* ---------- Chapters ---------- */
+  .chapter { position: relative; background: var(--paper); color: var(--ink); }
+  .chapter--dark { background: var(--black); color: var(--ink-inv); }
+  .chapter--dark .muted { color: var(--ink-inv-soft); }
+  .chapter--dark .faint { color: var(--ink-inv-mute); }
+  .chapter--dark .hair { background: var(--rule-inv); }
+  /* Lifts text above the pointer trail on the dark chapters, so the dye runs
+     behind the words instead of washing over them. Only text carries it: the
+     surfaces underneath stay below the trail, which is what keeps the trail
+     visible at all. Below the nav's z-50. */
+  .over-trail { position: relative; z-index: 41; }
+
+  /* The pointer trail blends into the paper chapters rather than sitting on
+     top of them. It stays unblended on the dark ones, where `lighten` would
+     take the orange to full strength over black and flood them. */
+  .liquid-overlay { mix-blend-mode: lighten; }
+  :root[data-tone="dark"] .liquid-overlay { mix-blend-mode: normal; }
+
+  .muted { color: var(--ink-soft); }
+  .faint { color: var(--ink-mute); }
+  .hair { background: var(--rule); height: 1px; width: 100%; border: 0; }
+
+  /* ---------- Shell ---------- */
+  .shell {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ---------- Micro-label ---------- */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .chapter--dark .label { color: var(--ink-inv-mute); }
+
+  /* Numbered section label with accent glyph, from Ref 1. */
+  .sec-label { display: inline-flex; align-items: center; gap: 0.6rem; }
+  .sec-label__mark { color: var(--accent); font-size: 0.7rem; line-height: 1; }
+  .sec-label__n {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .chapter--dark .sec-label__n { color: var(--ink-inv); }
+  .sec-label__t {
+    font-size: 0.8125rem;
+    color: var(--ink-mute);
+    letter-spacing: -0.01em;
+  }
+  .chapter--dark .sec-label__t { color: var(--ink-inv-mute); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    min-height: 2.875rem;
+    padding: 0 1.35rem;
+    border-radius: var(--r-pill);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition:
+      background-color 260ms var(--ease),
+      color 260ms var(--ease),
+      border-color 260ms var(--ease),
+      transform 260ms var(--ease);
+  }
+  .btn:active { transform: scale(0.98); }
+
+  .btn--solid { background: var(--black); color: var(--ink-inv); }
+  .btn--solid:hover { background: var(--accent); color: var(--accent-ink); }
+  .chapter--dark .btn--solid { background: var(--ink-inv); color: var(--black); }
+  .chapter--dark .btn--solid:hover { background: var(--accent); color: var(--accent-ink); }
+
+  .btn--accent { background: var(--accent); color: var(--accent-ink); }
+  .btn--accent:hover { background: #a6370a; }
+
+  .btn--ghost { border: 1px solid var(--rule-strong); color: var(--ink); }
+  .btn--ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chapter--dark .btn--ghost { border-color: var(--rule-inv-strong); color: var(--ink-inv); }
+  .chapter--dark .btn--ghost:hover { background: var(--ink-inv); color: var(--black); border-color: var(--ink-inv); }
+
+  /* ---------- Chip ---------- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    padding: 0 0.75rem;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, var(--color-white) 10%, transparent);
+    backdrop-filter: blur(10px);
+    font-size: 0.75rem;
+    letter-spacing: -0.005em;
+    color: var(--ink-inv);
+  }
+  .chip__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-hot); }
+
+  /* ---------- Glass ----------
+     Frosted surfaces that sit over media or over a chapter and let it show
+     through. saturate() is what stops the blur going flat and grey; the top
+     inset highlight is the edge catching light, which is the difference
+     between glass and a translucent rectangle. */
+  .glass {
+    background: color-mix(in srgb, var(--color-white) 10%, transparent);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-white) 16%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, var(--color-white) 22%, transparent),
+      0 8px 32px -12px rgb(0 0 0 / 0.45);
+    color: var(--ink-inv);
+  }
+  .glass--light {
+    background: color-mix(in srgb, var(--color-white) 72%, transparent);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-white) 70%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, var(--color-white) 90%, transparent),
+      0 8px 30px -14px rgb(17 17 17 / 0.22);
+    color: var(--ink);
+  }
+  /* Deeper tint for panels that carry a lot of text over busy media. */
+  .glass--deep {
+    background: rgb(11 11 11 / 0.45);
+    border-color: color-mix(in srgb, var(--color-white) 13%, transparent);
+  }
+  .glass-hover {
+    transition:
+      background-color 320ms var(--ease),
+      border-color 320ms var(--ease),
+      transform 320ms var(--ease);
+  }
+  .glass-hover:hover {
+    background: color-mix(in srgb, var(--color-white) 18%, transparent);
+    border-color: color-mix(in srgb, var(--color-white) 30%, transparent);
+  }
+  .glass--light.glass-hover:hover {
+    background: color-mix(in srgb, var(--color-white) 92%, transparent);
+    border-color: var(--color-white);
+  }
+
+  /* Frosting lifts the ground behind the panel, so the quietest ink inside it
+     has to come up a step to stay readable. The hero video is a loop, so the
+     brightest frame reaching through the panel is a moving target: #b8b7b2
+     measured 4.49 on a phone in one pass and 4.28 in the next. This value
+     clears 5:1 against that same worst frame, which leaves headroom for the
+     part of the loop the harness has not happened to sample. */
+  .glass .label,
+  .glass .faint { color: #c8c7c2; }
+  .glass .muted { color: var(--ink-inv); }
+  .glass--light .label,
+  .glass--light .faint { color: var(--ink-soft); }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass { background: rgb(11 11 11 / 0.72); }
+    .glass--light { background: color-mix(in srgb, var(--color-white) 94%, transparent); }
+  }
+
+  /* ---------- Media ----------
+     Photography keeps its colour. One quiet grade holds a mixed set together
+     without draining it: a touch of contrast, saturation pulled back a
+     fraction. Full monochrome is reserved for atmosphere plates, where the
+     image is a texture rather than a subject. */
+  .media { border-radius: var(--r-lg); overflow: hidden; background: var(--paper-2); }
+  .media img,
+  .media video { width: 100%; height: 100%; object-fit: cover; }
+  .media img { filter: saturate(0.92) contrast(1.04); }
+  .media--mono img,
+  .media--mono video { filter: grayscale(1) contrast(1.06); }
+
+  /* ---------- Hover ----------
+     One shared vocabulary: the media breathes, the frame lifts. */
+  .media--zoom img,
+  .media--zoom video {
+    transition: transform 900ms var(--ease), filter 500ms var(--ease);
+    will-change: transform;
+  }
+  .group:hover .media--zoom img,
+  .group:hover .media--zoom video,
+  .media--zoom:hover img,
+  .media--zoom:hover video {
+    transform: scale(1.045);
+  }
+  .group:hover .media--zoom img,
+  .media--zoom:hover img {
+    filter: saturate(1.04) contrast(1.06);
+  }
+
+  .lift {
+    transition:
+      transform 420ms var(--ease),
+      box-shadow 420ms var(--ease),
+      border-color 420ms var(--ease);
+  }
+  .lift:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow: 0 18px 40px -22px rgb(17 17 17 / 0.35);
+  }
+
+  /* ---------- Horizontal rail ----------
+     A native scroll track for cards. Three things have to be true or the
+     cards look broken rather than scrollable:
+
+     - scroll-padding, not just padding. With scroll-snap the browser aligns a
+       snapped item to the scrollport edge and scrolls the padding away, which
+       parks the first card flush against the viewport instead of on the page
+       gutter. scroll-padding moves the snapport itself.
+     - room for the hover shadow. overflow-x: auto forces overflow-y to a
+       clipping value, so a lifted card's shadow is cut off at the track edge
+       unless the padding is deeper than the shadow. The negative margin gives
+       that room back to the layout.
+     - no scrollbar. The peeking next card is the affordance; a grey bar
+       across the bottom of a light section is not.
+
+     The rail is full-bleed so cards can run off the edge, but its first card
+     has to line up with the copy above it, which stops at the shell. Past the
+     measure the shell is centred, so the inset is the gutter plus whatever
+     margin the centring adds; below it the two are the same number. */
+  .rail {
+    --rail-inset: max(
+      var(--gutter),
+      calc((100% - var(--measure)) / 2 + var(--gutter))
+    );
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-inline: var(--rail-inset);
+    scroll-padding-inline: var(--rail-inset);
+    padding-block: 2.75rem;
+    margin-block: -2.75rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > * { scroll-snap-align: start; }
+
+  /* Underline that draws in from the left rather than fading. */
+  .ul-draw {
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1.5px;
+    transition: background-size 420ms var(--ease);
+  }
+  .ul-draw:hover,
+  .group:hover .ul-draw {
+    background-size: 100% 1.5px;
+  }
+
+  /* ---------- Motion primitives ---------- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    transition:
+      opacity 800ms var(--ease),
+      transform 800ms var(--ease);
+  }
+  [data-reveal][data-in],
+  [data-in] [data-reveal] { opacity: 1; transform: none; }
+
+  /* The mask has to clip the line the text rises from. But headline leading
+     here is tighter than the face's natural line box, which puts descenders
+     below the line box — a hidden overflow slices the y in "carry." clean
+     off. Reserve that depth as padding, pull it back with an equal negative
+     margin so the line rhythm is unchanged, and start the rise below the
+     padding so the mask still hides it. */
+  .rise {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.2em;
+    margin-bottom: -0.2em;
+  }
+  .rise > span {
+    display: block;
+    transform: translate3d(0, 130%, 0);
+    transition: transform 1000ms var(--ease);
+  }
+  [data-in] .rise > span { transform: none; }
+
+  .mask-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+}
+
+/* ============================================================
+   SEAM SYSTEM — the v2 visual language, taken from the logo.
+
+   The mark is two pieces on one 45° line, separated by a gap a quarter
+   of the stroke wide. Its points are sharp and its inside elbows round.
+   So: shapes here are cut at 45° rather than rounded into pills, a thin
+   seam line marks a join, and orange is light, not fill.
+
+   New screens use these. The older primitives above stay until each
+   page is redesigned, so the v1 pages keep working in between.
+   ============================================================ */
+
+:root {
+  --brand-black: #0f0f11;      /* from the logo files, slightly cool */
+  --brand-black-2: #17171a;
+  --brand-black-3: #1f1f23;
+  --brand-orange: #ea580c;     /* flat orange, used on small marks */
+  --brand-ink: #231f20;        /* small text on white, from the brand sheet */
+  --seam: linear-gradient(90deg, #c2410c, #ea580c);
+  --cut: 14px;                 /* chamfer size; set per element */
+}
+
+@layer components {
+  /* 45° chamfers on the top-left and bottom-right corners, like the
+     mark's two points. Clip-path also clips outlines, so focus rings
+     draw inside the shape instead. */
+  .cut {
+    clip-path: polygon(
+      var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)
+    );
+  }
+  .cut:focus-visible, .cut:has(:focus-visible) { outline-offset: -4px; }
+
+  /* A chamfered panel with a hairline border. Clip-path would cut a CSS
+     border off at the corners, so the border is a padded layer behind. */
+  .plate {
+    --plate-line: var(--rule);
+    --plate-fill: var(--color-white); /* the light ground, by theme role */
+    position: relative;
+    background: var(--plate-line);
+    padding: 1px;
+  }
+  .plate > .plate__in { background: var(--plate-fill); height: 100%; }
+  .plate, .plate > .plate__in {
+    clip-path: polygon(
+      var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)
+    );
+  }
+  .chapter--dark .plate, .plate--dark {
+    --plate-line: var(--rule-inv);
+    --plate-fill: var(--brand-black-2);
+  }
+
+  /* Buttons. Same sizes as .btn, chamfered, and the hover runs a seam of
+     light along the bottom edge rather than flooding the fill. */
+  .sbtn {
+    --cut: 10px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    min-height: 2.875rem;
+    padding: 0 1.4rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition: background-color 260ms var(--ease), color 260ms var(--ease);
+  }
+  .sbtn::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    background: var(--seam);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms var(--ease);
+  }
+  .sbtn:hover::after, .sbtn:focus-visible::after { transform: scaleX(1); }
+  .sbtn:active { transform: translateY(1px); }
+  .sbtn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .sbtn:disabled::after { display: none; }
+
+  .sbtn--solid { background: var(--brand-black); color: var(--color-white); }
+  .chapter--dark .sbtn--solid, .sbtn--light { background: var(--color-white); color: var(--brand-black); }
+  .sbtn--accent { background: var(--accent); color: white; }
+  .sbtn--accent:hover { background: #a6370a; }
+  .sbtn--accent::after { background: white; }
+  .sbtn--line {
+    background: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 1px var(--rule-strong);
+  }
+  .chapter--dark .sbtn--line, .sbtn--line-dark { box-shadow: inset 0 0 0 1px var(--rule-inv-strong); }
+  .sbtn--sm { min-height: 2.25rem; padding: 0 0.95rem; font-size: 0.8125rem; --cut: 8px; }
+  .sbtn--icon { padding: 0; width: 2.75rem; }
+
+  /* The seam: a thin 45° light line, used as a divider or a mark. */
+  .seam-line {
+    display: block;
+    height: 2px;
+    background: var(--seam);
+    transform: skewX(-45deg);
+  }
+
+  /* Form fields: underlined, square, mono label above. */
+  .sfield {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule-strong);
+    border-radius: 0;
+    font: inherit;
+    font-size: 1.0625rem;
+    color: inherit;
+    transition: border-color 260ms var(--ease);
+  }
+  .sfield::placeholder { color: var(--ink-mute); }
+  .sfield:hover { border-bottom-color: var(--ink); }
+  .sfield:focus { outline: none; border-bottom-color: var(--accent); box-shadow: 0 1px 0 0 var(--accent); }
+  .sfield[aria-invalid="true"] { border-bottom-color: #b42318; }
+  .chapter--dark .sfield, .sfield--dark { border-bottom-color: var(--rule-inv-strong); }
+  .chapter--dark .sfield:hover, .sfield--dark:hover { border-bottom-color: var(--color-white); }
+  .chapter--dark .sfield::placeholder, .sfield--dark::placeholder { color: var(--ink-inv-mute); }
+  textarea.sfield { min-height: 9rem; resize: vertical; line-height: 1.55; }
+  select.sfield { appearance: none; cursor: pointer; }
+
+  .slabel {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .chapter--dark .slabel { color: var(--ink-inv-mute); }
+
+  /* The twin dots of the i and j: the identity's only round forms,
+     used as a small position or status mark. */
+  .twin { display: inline-flex; gap: 3px; }
+  .twin::before, .twin::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .twin--on::after { background: var(--brand-orange); }
+
+  /* Duotone: stock photography pulled into the brand, black to warm
+     white with the orange carried in the mids, so mixed sources read as
+     one set. */
+  .duo { position: relative; overflow: hidden; background: var(--brand-black); isolation: isolate; }
+  .duo img, .duo video {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(1) contrast(1.15) brightness(0.9);
+  }
+  .duo::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(135deg, #c2410c, #ea580c);
+    mix-blend-mode: multiply; opacity: 0.55;
+    transition: opacity 600ms var(--ease);
+  }
+  .duo--quiet::after { opacity: 0.28; }
+
+  /* Seam split: the image is two copies cut on a 45° line through its
+     centre, which part along the seam on hover and show orange light
+     between them. Container units keep the cut at exactly 45° whatever
+     the aspect ratio. */
+  .split { position: relative; overflow: hidden; container-type: size; background: var(--seam); }
+  .split > .split__a, .split > .split__b {
+    position: absolute; inset: 0;
+    transition: transform 700ms var(--ease);
+  }
+  .split > .split__a { clip-path: polygon(0 0, calc(50% + 50cqh) 0, calc(50% - 50cqh) 100%, 0 100%); }
+  .split > .split__b { clip-path: polygon(calc(50% + 50cqh) 0, 100% 0, 100% 100%, calc(50% - 50cqh) 100%); }
+  .group:hover .split > .split__a, .split:focus-within > .split__a { transform: translate(-5px, -5px); }
+  .group:hover .split > .split__b, .split:focus-within > .split__b { transform: translate(5px, 5px); }
+
+  /* 45° wipe in, from the top-left corner, for a square plate. */
+  @keyframes wipe-in {
+    from { clip-path: polygon(0 0, 0 0, 0 0); }
+    to { clip-path: polygon(0 0, 200% 0, 0 200%); }
+  }
+  .wipe-in { animation: wipe-in 900ms var(--ease) both; }
+
+  /* Blur rise, for words swapping in a scene (Noomo Storytelling). */
+  @keyframes blur-rise {
+    from { opacity: 0; filter: blur(14px); transform: translateY(18%); }
+    to { opacity: 1; filter: blur(0); transform: none; }
+  }
+  .blur-rise { animation: blur-rise 800ms var(--ease) both; }
+
+  /* Bracketed mono link, from PRØDUX and Labs: [ VIEW ALL WORK ]. */
+  .bracket {
+    display: inline-flex; align-items: center; gap: 0.5em; min-height: 2.75rem;
+    font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .bracket::before { content: "["; transition: transform 300ms var(--ease); }
+  .bracket::after { content: "]"; transition: transform 300ms var(--ease); }
+  .bracket:hover::before { transform: translateX(-4px); }
+  .bracket:hover::after { transform: translateX(4px); }
+  .bracket:hover { color: var(--brand-orange); }
+
+  [data-in] [data-draw] { --draw: 1; }
+  [data-in] [data-rise] { --rise: 0%; }
+
+  /* Line drawings that trace themselves in (SplitMark draw, footer). */
+  .draw path, .draw line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 2400ms var(--ease), transform 900ms var(--ease);
+  }
+  [data-in] .draw path, [data-in] .draw line { stroke-dashoffset: 0; }
+
+  /* Faint drafting grid, as on the hero floor. */
+  .drafting {
+    background-image:
+      linear-gradient(rgb(234 88 12 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(234 88 12 / 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], .rise > span {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   THEME — the whole site in black or in white (lib/theme.ts).
+
+   <html data-theme> picks the ground and ink. Sections were written for a
+   native ground — `.chapter--dark` (white ink on brand black) or `.chapter`
+   (black ink on paper/white) — so instead of rewriting each one, every
+   chapter maps its native palette onto the theme tokens by role:
+     on a dark-native chapter, white is the ink and brand black the ground;
+     on a light-native one, white is the ground and black the ink.
+   Tailwind's white/black utilities read --color-white/--color-black, and
+   literal whites in the components were changed to var(--color-white), so
+   the whole palette follows. `.tone-dark` / `.tone-light` apply the same
+   mapping to surfaces that are not chapters (the opening, the menu).
+   Text that must stay white whatever the theme (over photographs, on the
+   orange) uses the keyword `white`, which nothing remaps.
+   ============================================================ */
+
+:root, :root[data-theme="dark"] {
+  --bg: #0f0f11;
+  --bg-2: #17171a;
+  --bg-3: #1f1f23;
+  --fg: #f4f4f2;
+  --fg-soft: #a5a49f;
+  --fg-mute: #85837d;
+  --line: rgb(240 240 238 / 0.16);
+  --line-strong: rgb(240 240 238 / 0.34);
+  /* Orange for small text (labels, numbers, counters, small links). The
+     brand orange reads at 4.6:1 or better on every dark ground. */
+  --orange-ink: #ea580c;
+}
+:root[data-theme="light"] {
+  --bg: #f0f0ee;
+  --bg-2: #ffffff;
+  --bg-3: #e6e6e3;
+  --fg: #111113;
+  --fg-soft: #55534f;
+  --fg-mute: #63615c;
+  --line: rgb(17 17 17 / 0.14);
+  --line-strong: rgb(17 17 17 / 0.3);
+  /* On white the brand orange is only 3.1:1, too faint for small text, so
+     small text takes the deeper shade of it (4.5:1 or better on every light
+     ground). Large type, marks and fills keep --brand-orange. */
+  --orange-ink: #b4400c;
+}
+
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); }
+
+:root[data-theme] .chapter--dark,
+:root[data-theme] .tone-dark {
+  --color-white: var(--fg);
+  --black: var(--bg);
+  --black-2: var(--bg-2);
+  --brand-black: var(--bg);
+  --brand-black-2: var(--bg-2);
+  --brand-black-3: var(--bg-3);
+  --ink-inv: var(--fg);
+  --ink-inv-soft: var(--fg-soft);
+  --ink-inv-mute: var(--fg-mute);
+  --rule-inv: var(--line);
+  --rule-inv-strong: var(--line-strong);
+}
+:root[data-theme] .chapter:not(.chapter--dark),
+:root[data-theme] .tone-light {
+  --color-white: var(--bg-2);
+  --color-black: var(--fg);
+  --paper: var(--bg);
+  --paper-2: var(--bg-3);
+  --brand-black: var(--fg);
+  --brand-ink: var(--fg);
+  --ink: var(--fg);
+  --ink-soft: var(--fg-soft);
+  --ink-mute: var(--fg-mute);
+  --rule: var(--line);
+  --rule-strong: var(--line-strong);
+}
+
+/* The WebGL mark is drawn in light lines and dark metal for a black ground.
+   On white it is inverted with the hue kept, so lines turn dark, the metal
+   light, and the orange stays orange. */
+:root[data-theme="light"] .theme-invert { filter: invert(1) hue-rotate(180deg); }
+
+/* Over photographs the ink is white and the chips black in either theme. */
+:root[data-theme] .on-media {
+  --color-white: #fff;
+  --color-black: #000;
+  --brand-black: #0f0f11;
+}
+
+/* ============================================================
+   PILL BUTTONS — the hero's actions. A rounded pill with the arrow in its
+   own circle; on hover the arrow slides out to the right and a second one
+   slides in from the left, so the circle always reads as "go".
+   Colours from the theme tokens (--fg / --bg), so they read on every
+   chapter in either theme.
+   ============================================================ */
+@layer components {
+  .pbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-height: 3.25rem;
+    padding: 0.375rem 0.375rem 0.375rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition: background-color 320ms var(--ease), color 320ms var(--ease), box-shadow 320ms var(--ease);
+  }
+  .pbtn__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    overflow: hidden;
+    border-radius: 999px;
+    transition: background-color 320ms var(--ease), transform 420ms var(--ease);
+  }
+  .pbtn__icon > span {
+    grid-area: 1 / 1;
+    transition: transform 420ms var(--ease);
+  }
+  .pbtn__icon > span + span { transform: translateX(-2.5rem); }
+  .pbtn:hover .pbtn__icon > span:first-child,
+  .pbtn:focus-visible .pbtn__icon > span:first-child { transform: translateX(2.5rem); }
+  .pbtn:hover .pbtn__icon > span + span,
+  .pbtn:focus-visible .pbtn__icon > span + span { transform: none; }
+  .pbtn:active .pbtn__icon { transform: scale(0.94); }
+  .pbtn:focus-visible { outline: 2px solid var(--brand-orange); outline-offset: 3px; }
+
+  .pbtn--sm { min-height: 2.75rem; gap: 0.7rem; padding: 0.25rem 0.25rem 0.25rem 1.1rem; font-size: 0.8125rem; }
+  .pbtn--sm .pbtn__icon { width: 2.125rem; height: 2.125rem; }
+  .pbtn--sm .pbtn__icon > span + span { transform: translateX(-2.125rem); }
+  .pbtn--sm:hover .pbtn__icon > span:first-child,
+  .pbtn--sm:focus-visible .pbtn__icon > span:first-child { transform: translateX(2.125rem); }
+  .pbtn--sm:hover .pbtn__icon > span + span,
+  .pbtn--sm:focus-visible .pbtn__icon > span + span { transform: none; }
+  .pbtn--solid { background: var(--fg); color: var(--bg); }
+  .pbtn--solid .pbtn__icon { background: var(--brand-orange); color: white; }
+  .pbtn--solid:hover { background: color-mix(in srgb, var(--fg) 88%, var(--brand-orange)); }
+  .pbtn--line { color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .pbtn--line .pbtn__icon { background: color-mix(in srgb, var(--fg) 10%, transparent); }
+  .pbtn--line:hover { box-shadow: inset 0 0 0 1px var(--fg); }
+  .pbtn--line:hover .pbtn__icon { background: var(--brand-orange); color: white; }
+}
+
+/* ============================================================
+   BUTTONS AS PILLS — every .sbtn on the site takes the hero's pill
+   shape (see PILL BUTTONS): rounded, no chamfer (the .cut they carry is
+   cancelled here), and an arrow or icon given its own round badge, which
+   nudges on hover. Unlayered, so it wins over the older .sbtn rules.
+   ============================================================ */
+.sbtn {
+  border-radius: 999px;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding: 0.3rem 1.35rem;
+  transition: background-color 320ms var(--ease), color 320ms var(--ease), box-shadow 320ms var(--ease);
+}
+.sbtn.cut,
+.sbtn.cut:focus-visible { clip-path: none; }
+.sbtn:focus-visible { outline: 2px solid var(--brand-orange); outline-offset: 3px; }
+.sbtn::after { display: none; }
+/* The badge sits at the end by default; a button that leads with it (a back
+   arrow) says so with .sbtn--lead. (Not :first-child — text nodes do not
+   count as children, so "Explore … <span>→</span>" would read as leading
+   and lose its left padding.) */
+.sbtn:has(> span[aria-hidden="true"]):not(.sbtn--lead) { padding-right: 0.35rem; }
+.sbtn--lead { padding-left: 0.35rem; }
+.sbtn > span[aria-hidden="true"] {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--brand-orange);
+  color: white;
+  transition: transform 420ms var(--ease), background-color 320ms var(--ease);
+}
+.sbtn:not(.sbtn--lead):hover > span[aria-hidden="true"] { transform: translateX(3px); }
+.sbtn--lead:hover > span[aria-hidden="true"] { transform: translateX(-3px); }
+.sbtn--accent > span[aria-hidden="true"] { background: white; color: var(--accent); }
+.sbtn--line:hover { box-shadow: inset 0 0 0 1px currentColor; }
+.sbtn--sm { min-height: 2.5rem; }
+.sbtn--sm > span[aria-hidden="true"] { width: 1.9rem; height: 1.9rem; }
+.sbtn--icon { width: 3rem; min-height: 3rem; padding: 0; justify-content: center; }
+
+/* Close B: the question as a window onto the seam gradient, with a drafting
+   grid drifting slowly behind the letters for as long as it is on screen. */
+.close-window {
+  color: transparent;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-white) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-white) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(135deg, #c2410c, #ea580c 55%, #f59e0b);
+  background-size: 28px 28px, 28px 28px, 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: close-grid 18s linear infinite;
+}
+@keyframes close-grid {
+  to { background-position: 280px 140px, 280px 140px, 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .close-window { animation: none; }
+}
+
+/* ============================================================
+   INNER PAGES IN THE HOMEPAGE'S LANGUAGE — the shared primitives the
+   inner pages are built from, restyled once so every page follows:
+   images as chamfered brand-duotone plates that come to colour on hover;
+   reveals that come out of a blur as well as rising; crisper corners;
+   .btn as pills with the arrow in a round badge; theme-token colours.
+   Unlayered, so these win over the older rules above.
+   ============================================================ */
+:root {
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+  --r-xl: 12px;
+}
+
+.media {
+  --mcut: clamp(10px, 1.4vw, 22px);
+  position: relative;
+  isolation: isolate;
+  border-radius: 0;
+  background: var(--brand-black);
+  clip-path: polygon(var(--mcut) 0, 100% 0, 100% calc(100% - var(--mcut)), calc(100% - var(--mcut)) 100%, 0 100%, 0 var(--mcut));
+}
+.media img,
+.media video { filter: grayscale(1) contrast(1.12) brightness(0.92); transition: filter 700ms var(--ease), transform 1200ms var(--ease); }
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(135deg, #c2410c, #ea580c);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  transition: opacity 700ms var(--ease);
+}
+.group:hover .media::after,
+.media:hover::after { opacity: 0.16; }
+.group:hover .media img,
+.media:hover img { filter: grayscale(0.3) contrast(1.05); }
+
+[data-reveal] {
+  filter: blur(8px);
+  transition: opacity 900ms var(--ease), transform 900ms var(--ease), filter 900ms var(--ease);
+}
+[data-reveal][data-in],
+[data-in] [data-reveal] { filter: none; }
+
+.btn {
+  border-radius: 999px;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding: 0.3rem 1.35rem;
+  transition: background-color 320ms var(--ease), color 320ms var(--ease), box-shadow 320ms var(--ease), border-color 320ms var(--ease);
+}
+/* The badge sits at the end (see .sbtn: text nodes are not children, so
+   :first-child cannot tell where it is). */
+.btn:has(> span[aria-hidden="true"]) { padding-right: 0.35rem; }
+.btn > span[aria-hidden="true"] {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--brand-orange);
+  color: white;
+  transition: transform 420ms var(--ease);
+}
+.btn:hover > span[aria-hidden="true"] { transform: translateX(3px); }
+.btn--solid { background: var(--fg); color: var(--bg); }
+.btn--solid:hover { background: var(--brand-orange); color: white; }
+.btn--solid:hover > span[aria-hidden="true"] { background: white; color: var(--brand-orange); }
+.btn--accent { background: var(--accent); color: white; }
+.btn--accent > span[aria-hidden="true"] { background: white; color: var(--accent); }
+.btn--ghost { border: 0; box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--fg); background: transparent; }
+.btn--ghost:hover { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg); }
+
+.pbtn--accent { background: var(--accent); color: white; }
+.pbtn--accent .pbtn__icon { background: white; color: var(--accent); }
+.pbtn--accent:hover { background: #a6370a; }
+
+/* Old v1 surfaces read as the homepage's: hairlines in the theme. */
+.muted { color: var(--fg-soft); }
+.faint { color: var(--fg-mute); }
+.label { color: var(--fg-mute); }
+/* The admin prototype does not follow the site theme: it is always the light
+   screen it was drawn as, so its secondary text keeps the native inks (the
+   theme's light-on-dark greys were 2.5:1 on its white panels). */
+.admin-ui .muted { color: var(--ink-soft); }
+.admin-ui .faint,
+.admin-ui .label { color: var(--ink-mute); }
+
+/* Duotone plates come to colour a little on hover, as images do on Home. */
+.group:hover .duo::after { opacity: 0.22; }
+
+/* ============================================================
+   GLASS CARDS — the homepage's frosted card (the Approach staircase's
+   GLASS) for the cards on the inner pages: a faint gradient fill, a
+   hairline rim lit along the top, a soft lift, and a warm glow in the
+   top-left corner that stands in for the orange light the homepage card
+   sits in. Dark glass is the homepage card exactly; on white, the fill is
+   near-white so the card lifts off the grey ground. Text inside keeps the
+   section's own inks. Most of the look is the fill and rim; backdrop blur
+   is only felt where something sits behind, so it stays light on phones.
+   ============================================================ */
+:root, :root[data-theme="dark"] {
+  --gcard-fill: linear-gradient(140deg, color-mix(in srgb, var(--fg) 9%, transparent), color-mix(in srgb, var(--fg) 3%, transparent));
+  --gcard-glow: radial-gradient(90% 70% at 0% 0%, rgb(234 88 12 / 0.09), transparent 65%);
+  --gcard-rim: inset 0 0 0 1px color-mix(in srgb, var(--fg) 13%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --gcard-rim-hot: inset 0 0 0 1px color-mix(in srgb, var(--fg) 28%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.16);
+  --gcard-lift: 0 30px 60px -32px rgb(0 0 0 / 0.6);
+  --gcard-lift-hot: 0 36px 70px -30px rgb(0 0 0 / 0.75);
+  --gcard-blur: blur(18px) saturate(150%);
+  --stage-glow: rgb(234 88 12 / 0.17);
+  --stage-glow-2: rgb(234 88 12 / 0.1);
+  --stage-grid: rgb(234 88 12 / 0.1);
+  --sheet-glow: rgb(234 88 12 / 0.15);
+}
+:root[data-theme="light"] {
+  --gcard-fill: linear-gradient(160deg, rgb(255 255 255 / 0.74), rgb(255 255 255 / 0.5));
+  --gcard-glow: radial-gradient(90% 70% at 0% 0%, rgb(234 88 12 / 0.07), transparent 65%);
+  --gcard-rim: inset 0 0 0 1px color-mix(in srgb, var(--fg) 9%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.95);
+  --gcard-rim-hot: inset 0 0 0 1px color-mix(in srgb, var(--fg) 22%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.95);
+  --gcard-lift: 0 1px 2px rgb(17 17 19 / 0.04), 0 22px 44px -24px rgb(84 36 8 / 0.22);
+  --gcard-lift-hot: 0 2px 4px rgb(17 17 19 / 0.05), 0 28px 54px -24px rgb(84 36 8 / 0.3);
+  --stage-glow: rgb(234 88 12 / 0.2);
+  --stage-glow-2: rgb(234 88 12 / 0.12);
+  --stage-grid: rgb(234 88 12 / 0.1);
+  --sheet-glow: rgb(234 88 12 / 0.1);
+}
+@media (max-width: 760px) {
+  :root { --gcard-blur: blur(12px) saturate(140%); }
+}
+.gcard {
+  border-radius: 22px;
+  background: var(--gcard-glow), var(--gcard-fill);
+  box-shadow: var(--gcard-rim), var(--gcard-lift);
+  -webkit-backdrop-filter: var(--gcard-blur);
+  backdrop-filter: var(--gcard-blur);
+}
+/* Glass needs something behind it to frost. A card list (or a lone card's
+   wrapper) is a .glass-stage: behind the cards, a faint drafting grid and two
+   warm glows, as round the homepage's held card. In the gaps the grid stays
+   sharp; under each card the backdrop blur softens it to a haze, which is
+   what reads as glass. Isolated, so the layer sits behind the cards only. */
+.glass-stage { position: relative; isolation: isolate; }
+.glass-stage::before {
+  content: "";
+  position: absolute;
+  inset: -56px calc(var(--gutter) * -0.75);
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(30% 40% at 22% 32%, var(--stage-glow), transparent 70%),
+    radial-gradient(26% 36% at 80% 70%, var(--stage-glow-2), transparent 70%),
+    linear-gradient(var(--stage-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stage-grid) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  background-position: 0 0, 0 0, -1px -1px, -1px -1px;
+  -webkit-mask-image: radial-gradient(72% 70% at 50% 50%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(72% 70% at 50% 50%, #000 45%, transparent 100%);
+}
+
+/* The same grid and glow as a free-standing backdrop for a homepage scene,
+   centred on (--gx, --gy): a drafting sheet round the scene's one visual
+   (Voices' quotation mark, each Work project's image). Kept to a few
+   sections so it stays a mark of the drawing, not a texture on everything. */
+.drafting-glow {
+  pointer-events: none;
+  background-image:
+    radial-gradient(var(--glow-size, 24% 34%) at var(--gx, 50%) var(--gy, 50%), var(--sheet-glow), transparent 70%),
+    linear-gradient(var(--stage-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stage-grid) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-position: 0 0, -1px -1px, -1px -1px;
+  -webkit-mask-image: radial-gradient(36% 48% at var(--gx, 50%) var(--gy, 50%), #000 25%, transparent 100%);
+  mask-image: radial-gradient(36% 48% at var(--gx, 50%) var(--gy, 50%), #000 25%, transparent 100%);
+}
+
+/* Cards that are links or lift on hover: the rim brightens with them. */
+.gcard--hover { transition: box-shadow 420ms var(--ease), transform 420ms var(--ease); }
+.gcard--hover:hover,
+.gcard.lift:hover { box-shadow: var(--gcard-rim-hot), var(--gcard-lift-hot); }
+/* The card's fill and its warm corner lift the ground a little, which takes
+   the small grey and orange labels just under 4.5:1 on dark; inside a card
+   they step up a shade (5:1 or better at the glow's brightest). Light glass
+   is whiter than the ground, so the light inks already pass. */
+:root:not([data-theme="light"]) .gcard {
+  --fg-mute: #a19f99;
+  --ink-mute: #a19f99;
+  --ink-inv-mute: #a19f99;
+  --orange-ink: #f97316;
+}
