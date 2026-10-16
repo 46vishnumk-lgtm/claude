@@ -69,7 +69,9 @@ export function Opening() {
       // Phones: the column is too narrow for the mark to step aside, so it
       // would sit behind the statement's copy; it fades out as the
       // statement arrives instead (and back in on the way up to the hero).
-      if (!wide && layerRef.current) {
+      // Under reduced motion this jumps straight to 1, which would hide the
+      // mark for good; there the layer scrolls away with the hero instead.
+      if (!wide && !reduced && layerRef.current) {
         const k = clamp01(v / 0.3);
         layerRef.current.style.opacity = (1 - k * k * (3 - 2 * k)).toFixed(3);
       }
@@ -202,7 +204,15 @@ export function Opening() {
 
   return (
     <div className="tone-dark relative" style={{ background: "var(--brand-black)" }}>
-      <div ref={layerRef} aria-hidden="true" className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-[100svh] overflow-hidden">
+      <div
+        ref={layerRef}
+        aria-hidden="true"
+        className={`pointer-events-none z-0 h-[100svh] overflow-hidden ${
+          // Reduced motion: a still frame that belongs to the hero alone, so
+          // it does not stay pinned behind the Statement's copy.
+          reduced ? "absolute inset-x-0 top-0" : "sticky top-0 -mb-[100svh]"
+        }`}
+      >
         {scene}
       </div>
       <div className="relative z-[1]">

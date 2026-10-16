@@ -1,4 +1,4 @@
-import{M as gi,B as Ic,a as Uc}from"./index-D9QH6h8S.js";/**
+import{M as gi,B as Ic,a as Uc}from"./index-Sy7IX84H.js";/**
  * @license
  * Copyright 2010-2026 Three.js Authors
  * SPDX-License-Identifier: MIT
