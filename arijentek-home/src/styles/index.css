@@ -642,18 +642,19 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal], .rise > span {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+/* Reduced motion: set on <html> by lib/motion.ts (HONOR_REDUCED_MOTION). */
+[data-motion="reduce"] :is([data-reveal], .rise > span) {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* ============================================================
@@ -863,9 +864,7 @@ body { background: var(--bg); color: var(--fg); }
 @keyframes close-grid {
   to { background-position: 280px 140px, 280px 140px, 0 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .close-window { animation: none; }
-}
+[data-motion="reduce"] .close-window { animation: none; }
 
 /* ============================================================
    INNER PAGES IN THE HOMEPAGE'S LANGUAGE — the shared primitives the

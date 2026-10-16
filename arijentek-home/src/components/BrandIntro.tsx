@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { prefersReducedMotion } from "../lib/motion";
 import { SplitMark } from "./Logo";
 
 /**
@@ -22,7 +23,7 @@ export const introPending = () => pending;
 
 const shouldPlay = () => {
   if (typeof window === "undefined") return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  if (prefersReducedMotion()) return false;
   try {
     return sessionStorage.getItem(KEY) !== "seen";
   } catch {

@@ -6,9 +6,24 @@ import { stopFor } from "./stops";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Whether the site follows the system "reduce motion" setting. Off: many
+ * Windows PCs have animation effects switched off without their owners
+ * knowing, and the site then showed no motion at all. Set to true to make
+ * every scene, reveal and the smooth scroll stand still again under it.
+ */
+export const HONOR_REDUCED_MOTION = false;
+
+const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
+
 export const prefersReducedMotion = () =>
+  HONOR_REDUCED_MOTION &&
   typeof window !== "undefined" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.matchMedia(REDUCED_QUERY).matches;
+
+// The stylesheet's reduced-motion rules key off this attribute rather than
+// the media query, so they follow the same switch.
+if (prefersReducedMotion()) document.documentElement.dataset.motion = "reduce";
 
 /**
  * The live smooth-scroll instance, if there is one.
@@ -301,7 +316,7 @@ export function useMediaQuery(query: string) {
 
 /** Reactive form of `prefersReducedMotion`, for layout decisions. */
 export function useReducedMotion() {
-  return useMediaQuery("(prefers-reduced-motion: reduce)");
+  return useMediaQuery(REDUCED_QUERY) && HONOR_REDUCED_MOTION;
 }
 
 /**
